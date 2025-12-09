@@ -10,8 +10,8 @@ public enum ErrorCode {
     ALREADY_LIKED(409, "이미 좋아요 되어있습니다."),
     USERNAME_ALREADY_EXISTS(409, "이미 존재하는 사용자 아이디입니다."),
     //------404-----------------------
-    USER_NOT_FOUND(404, "없는 유저입니다"),
     TASK_NOT_FOUND(404, "존재하지 않는 작업입니다."),
+    USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
 
     //------403-----------------------
     USER_NOT_MATCH(403, "접근 권한이 없습니다"),

@@ -5,10 +5,12 @@ import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.domain.user.dto.request.UserCreateRequestDto;
 import com.example.taskflow.domain.user.dto.response.UserCreateResponseDto;
+import com.example.taskflow.domain.user.dto.response.UserGetResponseDto;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     // 회원가입
+    @Transactional
     public UserCreateResponseDto createUser(UserCreateRequestDto request) {
 
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -40,5 +43,17 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return UserCreateResponseDto.from(savedUser);
+    }
+
+    // 사용자 정보 조회
+    @Transactional(readOnly = true)
+    public UserGetResponseDto getUser(long userId) {
+
+        // TODO: Soft Delete 사용자 예외 처리 추가
+
+        User user = userRepository.findById(userId).orElseThrow(()
+                -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return UserGetResponseDto.from(user);
     }
 }
