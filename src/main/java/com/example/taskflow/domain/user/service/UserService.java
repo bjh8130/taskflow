@@ -3,14 +3,12 @@ package com.example.taskflow.domain.user.service;
 import com.example.taskflow.common.config.PasswordEncoder;
 import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
-import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.user.dto.request.UserCreateRequestDto;
 import com.example.taskflow.domain.user.dto.response.UserCreateResponseDto;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @Service
 @RequiredArgsConstructor

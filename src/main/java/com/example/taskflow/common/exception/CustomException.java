@@ -1,6 +1,5 @@
 package com.example.taskflow.common.exception;
 
-import com.example.taskflow.common.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
