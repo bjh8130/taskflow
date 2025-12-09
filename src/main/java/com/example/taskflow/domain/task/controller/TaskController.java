@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/tasks")
 public class TaskController {
+
     private final TaskService taskService;
+
     @PostMapping()
     public ResponseEntity<GlobalResponse<TaskCreateResponseDto>> createTask(@Valid @RequestBody TaskCreateRequestDTO request) {
 
@@ -24,13 +26,5 @@ public class TaskController {
                 .body(GlobalResponse.success(true, "Task 생성 성공",response));
 
     }
-    /*
-    이런 응답구조로 나옵니다
-    {
-      "success": true,
-      "message": "작업 목록 조회 성공",
-      "data": { }
-      }
-     */
 }
 
