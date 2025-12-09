@@ -16,7 +16,7 @@ public class Team extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true)
     private String name;
 
     @Column(columnDefinition = "TEXT")
