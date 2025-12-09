@@ -21,4 +21,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new GlobalResponse<>(false, errorMessage, null));
     }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleCustomException(CustomException e) {
+        ErrorCode errorCode = e.getErrorCode();
+
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(GlobalResponse.exception(false, errorCode));
+    }
 }

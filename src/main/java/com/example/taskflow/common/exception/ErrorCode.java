@@ -8,6 +8,7 @@ public enum ErrorCode {
     USER_ALREADY_EXISTS(409, "이미 존재하는 사용자 이메일입니다."),
     CELLPHONENUMBER_ALREADY_EXISTS(409, "이미 존재하는 전화번호입니다."),
     ALREADY_LIKED(409, "이미 좋아요 되어있습니다."),
+    USERNAME_ALREADY_EXISTS(409, "이미 존재하는 사용자 아이디입니다."),
     //------404-----------------------
     USER_NOT_FOUND(404, "없는 유저입니다"),
 
