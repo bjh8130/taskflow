@@ -18,6 +18,9 @@ public class ActivityLog extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 50)
+    private String type;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -26,9 +29,14 @@ public class ActivityLog extends BaseEntity {
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
-    @Column()
-    private String type;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
-    @Column
+    public ActivityLog(String type, User user, Task task, String description) {
+        this.type = type;
+        this.user = user;
+        this.task = task;
+        this.description = description;
+    }
 
 }
