@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.user.service;
 
+import com.example.taskflow.common.config.PasswordEncoder;
 import com.example.taskflow.domain.user.dto.request.UserCreateRequestDto;
 import com.example.taskflow.domain.user.dto.response.UserCreateResponseDto;
 import com.example.taskflow.domain.user.entity.User;
@@ -12,15 +13,18 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 회원가입
     public UserCreateResponseDto createUser(UserCreateRequestDto request) {
 
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
         User user = new User(
                 request.getUsername(),
                 request.getEmail(),
-                request.getPassword(),
-                request.getName()
+                request.getName(),
+                encodedPassword
         );
 
         User savedUser = userRepository.save(user);
