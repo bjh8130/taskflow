@@ -1,8 +1,8 @@
 package com.example.taskflow.domain.team.controller;
 
 import com.example.taskflow.common.response.GlobalResponse;
-import com.example.taskflow.domain.team.dto.request.TeamCreateRequestDTO;
-import com.example.taskflow.domain.team.dto.response.TeamCreateResponseDTO;
+import com.example.taskflow.domain.team.dto.request.TeamCreateRequestDto;
+import com.example.taskflow.domain.team.dto.response.TeamCreateResponseDto;
 import com.example.taskflow.domain.team.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +21,8 @@ public class TeamController {
     private final TeamService teamService;
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<TeamCreateResponseDTO>> teamCreateApi(@Valid @RequestBody TeamCreateRequestDTO request) {
-        TeamCreateResponseDTO result = teamService.save(request);
+    public ResponseEntity<GlobalResponse<TeamCreateResponseDto>> teamCreateApi(@Valid @RequestBody TeamCreateRequestDto request) {
+        TeamCreateResponseDto result = teamService.save(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(GlobalResponse.success(true, "팀이 생성되었습니다.", result));

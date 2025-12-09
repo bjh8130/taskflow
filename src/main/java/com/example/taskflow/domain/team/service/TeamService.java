@@ -2,8 +2,8 @@ package com.example.taskflow.domain.team.service;
 
 import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
-import com.example.taskflow.domain.team.dto.request.TeamCreateRequestDTO;
-import com.example.taskflow.domain.team.dto.response.TeamCreateResponseDTO;
+import com.example.taskflow.domain.team.dto.request.TeamCreateRequestDto;
+import com.example.taskflow.domain.team.dto.response.TeamCreateResponseDto;
 import com.example.taskflow.domain.team.entity.Team;
 import com.example.taskflow.domain.teamMember.repository.TeamMemberRepository;
 import com.example.taskflow.domain.team.repository.TeamRepository;
@@ -22,7 +22,7 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
 
-    public TeamCreateResponseDTO save(TeamCreateRequestDTO request) {
+    public TeamCreateResponseDto save(TeamCreateRequestDto request) {
         if (teamRepository.existsByName(request.getName())) {
             throw new CustomException(ErrorCode.TEAMNAME_ALREADY_EXISTS);
         }
@@ -32,6 +32,6 @@ public class TeamService {
 
         List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
 
-        return new TeamCreateResponseDTO(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
+        return new TeamCreateResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
     }
 }
