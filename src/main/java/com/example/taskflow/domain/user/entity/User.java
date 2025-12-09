@@ -34,7 +34,7 @@ public class User extends BaseEntity {
     @Column
     private boolean isDeleted = false;
 
-    public User(String username, String email, String name, String password, String role) {
+    public User(String username, String email, String name, String password) {
         this.username = username;
         this.email = email;
         this.name = name;
