@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class TeamCreateResponseDTO {
+public class TeamCreateResponseDto {
 
     private final Long id;
     private final String name;
@@ -16,7 +16,7 @@ public class TeamCreateResponseDTO {
     private final List<User> members;
 
 
-    public TeamCreateResponseDTO(Long id, String name, String description, LocalDateTime createdAt, List<User> members) {
+    public TeamCreateResponseDto(Long id, String name, String description, LocalDateTime createdAt, List<User> members) {
         this.id = id;
         this.name = name;
         this.description = description;
