@@ -1,6 +1,7 @@
 package com.example.taskflow.domain.user.entity;
 
 import com.example.taskflow.common.entity.BaseEntity;
+import com.example.taskflow.domain.user.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,7 +30,8 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(length = 20)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private UserRole role = UserRole.USER;
 
     @Column
     private boolean isDeleted = false;
@@ -39,7 +41,7 @@ public class User extends BaseEntity {
         this.email = email;
         this.name = name;
         this.password = password;
-        this.role = role;
+        this.role = UserRole.USER;
     }
 
 

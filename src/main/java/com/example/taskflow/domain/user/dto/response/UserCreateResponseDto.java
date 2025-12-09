@@ -23,7 +23,7 @@ public class UserCreateResponseDto {
                 user.getUsername(),
                 user.getEmail(),
                 user.getName(),
-                user.getRole(),
+                user.getRole().name(),
                 user.getCreatedAt()
         );
     }
