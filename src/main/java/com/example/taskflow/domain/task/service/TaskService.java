@@ -21,16 +21,14 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     @Transactional
-    public TaskCreateResponseDto createComment(TaskCreateRequestDTO request) {
+    public TaskCreateResponseDto createTask(TaskCreateRequestDTO request) {
         Long userId= 1L;
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
         Task task = new Task(
                 request.getTitle(),
                 request.getDescription(),
-                request.getStatus() != null
-                        ? request.getStatus()
-                        : TaskStatus.TODO.name(),
+                TaskStatus.TODO.name(),
                 request.getPriority() != null
                         ? request.getPriority()
                         : TaskPriority.MEDIUM.name(),
