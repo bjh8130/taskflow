@@ -1,7 +1,9 @@
 package com.example.taskflow.domain.task.entity;
 
+import com.example.taskflow.common.entity.BaseEntity;
 import com.example.taskflow.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "tasks")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Task {
+public class Task extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +52,7 @@ public class Task {
         this.user = user;
         this.dueDate = dueDate;
     }
+
 
 
 }
