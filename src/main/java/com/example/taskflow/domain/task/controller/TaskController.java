@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.task.controller;
 
+import com.example.taskflow.common.response.CustomPageResponse;
 import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.task.dto.request.TaskCreateRequestDTO;
 import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
@@ -38,15 +39,16 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<GlobalResponse<Page<TaskResponseDto>>> getAllTasks(
+    public ResponseEntity<GlobalResponse<CustomPageResponse<TaskResponseDto>>> getAllTasks(
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.ASC)
             Pageable pageable,
             @RequestParam(required = false) String status
     ) {
         Page<TaskResponseDto> result = taskService.getAllTask(pageable, status);
+        CustomPageResponse<TaskResponseDto> pagingResult = CustomPageResponse.from(result);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(GlobalResponse.success(true, "작업 목록 조회 성공",result));
+                .body(GlobalResponse.success(true, "작업 목록 조회 성공",pagingResult));
     }
 }
 

@@ -4,7 +4,6 @@ import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.comment.dto.request.CommentCreateRequestDto;
 import com.example.taskflow.domain.comment.dto.response.CommentResponseDto;
 import com.example.taskflow.domain.comment.service.CommentService;
-import com.example.taskflow.domain.task.dto.response.TaskCreateResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
