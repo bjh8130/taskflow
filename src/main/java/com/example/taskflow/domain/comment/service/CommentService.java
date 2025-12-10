@@ -143,4 +143,21 @@ public class CommentService {
 
         return CommentUpdateResponseDto.from(updatedComment);
     }
+
+    /**
+     * 댓글 삭제
+     */
+    @Transactional
+    public void deleteComment(long commentId, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+        // 권한 검증: 본인 댓글만 삭제 가능
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.COMMENT_FORBIDDEN);
+        }
+
+        // 댓글 삭제
+        commentRepository.delete(comment);
+    }
 }

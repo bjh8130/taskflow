@@ -87,4 +87,19 @@ public class CommentController {
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true,"댓글이 수정되었습니다.",result));
     }
+
+    /**
+     * 댓글 삭제
+     * DELETE /api/tasks/{taskId}/comments/{commentId}
+     */
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable long taskId,
+            @PathVariable long commentId,
+            @RequestHeader("userId") Long userId) {
+
+        commentService.deleteComment(commentId, userId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
