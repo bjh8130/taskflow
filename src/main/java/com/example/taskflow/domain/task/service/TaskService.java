@@ -1,8 +1,7 @@
 package com.example.taskflow.domain.task.service;
 
 import com.example.taskflow.common.exception.*;
-import com.example.taskflow.domain.task.dto.request.TaskCreateRequestDto;
-import com.example.taskflow.domain.task.dto.request.TaskUpdateRequestDto;
+import com.example.taskflow.domain.task.dto.request.*;
 import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
 import com.example.taskflow.domain.task.entity.Task;
 import com.example.taskflow.domain.task.enums.TaskPriority;
@@ -58,7 +57,7 @@ public class TaskService {
             tasks = taskRepository.findAllByIsDeletedFalse(pageable);
         } else {
             if(!TaskStatus.isValid(status)) {
-                throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+                throw new CustomException(ErrorCode.INVALID_ARGUMENT_STATUS);
             }
             tasks = taskRepository.findAllByStatusAndIsDeletedFalse(status,pageable);
         }
@@ -74,7 +73,6 @@ public class TaskService {
         task.update(
                 request.getTitle(),
                 request.getDescription(),
-                request.getStatus(),
                 request.getPriority(),
                 request.getDueDate()
         );
@@ -97,5 +95,16 @@ public class TaskService {
             return; // 아무 동작 X → 멱등성 유지
         }
         task.softDelete();
+    }
+
+    @Transactional
+    public TaskResponseDto updateTaskStatus(Long taskId, TaskStatusRequestDto request) {
+        if(!TaskStatus.isValid(request.getStatus())) {
+            throw new CustomException(ErrorCode.INVALID_ARGUMENT_STATUS);
+        }
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+        task.updateStatus(request.getStatus());
+        return TaskResponseDto.from(task, false);
     }
 }
