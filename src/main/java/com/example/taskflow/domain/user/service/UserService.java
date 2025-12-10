@@ -5,12 +5,15 @@ import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.domain.user.dto.request.UserCreateRequestDto;
 import com.example.taskflow.domain.user.dto.response.UserCreateResponseDto;
+import com.example.taskflow.domain.user.dto.response.UserGetAllResponseDto;
 import com.example.taskflow.domain.user.dto.response.UserGetResponseDto;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -55,5 +58,13 @@ public class UserService {
                 -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return UserGetResponseDto.from(user);
+    }
+
+    // 사용자 목록 조회
+    public List<UserGetAllResponseDto> getAllUsers() {
+
+        // TODO: Soft Delete 사용자 예외 처리 추가
+
+        return userRepository.findAll().stream().map(UserGetAllResponseDto::from).toList();
     }
 }
