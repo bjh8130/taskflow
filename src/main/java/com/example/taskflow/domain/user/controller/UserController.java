@@ -54,7 +54,9 @@ public class UserController {
     // 사용자 정보 수정 (JWT 전까지는 다른 사용자 수정 가능)
     // TODO: Path Parameter - JWT 토큰에서 추출한 ID로 수정
     @PutMapping("/{userId}")
-    public ResponseEntity<GlobalResponse<UserUpdateResponseDto>> updateUser(@PathVariable long userId, @Valid @RequestBody UserUpdateRequestDto request) {
+    public ResponseEntity<GlobalResponse<UserUpdateResponseDto>> updateUser(
+        @PathVariable long userId, 
+        @Valid @RequestBody UserUpdateRequestDto request) {
         UserUpdateResponseDto result = userService.updateUser(userId, request);
         return ResponseEntity
                 .status(HttpStatus.OK)
