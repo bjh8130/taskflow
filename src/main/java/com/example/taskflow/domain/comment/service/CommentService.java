@@ -115,24 +115,10 @@ public class CommentService {
 
         Pageable pageable = PageRequest.of(page, size, sortBy);
 
-        // 댓글 조회 (Task가 없으면 빈 페이지 반환)
-        Page<Comment> comments = commentRepository.findByTaskId(taskId, pageable);
+        // 댓글 조회 (fetch join으로 User, Task 함께 조회)
+        Page<Comment> comments = commentRepository.findByTaskIdWithUserAndTask(taskId, pageable);
 
-        // 댓글이 없으면 빈 페이지 반환
-        if (comments.isEmpty()) {
-            return CustomPageResponse.from(comments.map(CommentGetResponseDto::from));
-        }
-
-        // N+1 방지: User ID 추출 후 한 번에 조회
-        List<Long> userIds = comments.getContent().stream()
-                .map(comment -> comment.getUser().getId())
-                .distinct()
-                .collect(Collectors.toList());
-
-        // User들을 한 번에 조회 (IN 쿼리)
-        userRepository.findAllById(userIds);
-
-        // DTO 변환 (이미 영속성 컨텍스트에 로드되어 있어서 추가 쿼리 발생 안 함)
+        // DTO 변환
         Page<CommentGetResponseDto> responseDtos = comments.map(CommentGetResponseDto::from);
 
         return CustomPageResponse.from(responseDtos);

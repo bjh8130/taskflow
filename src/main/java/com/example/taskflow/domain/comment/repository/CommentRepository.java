@@ -29,4 +29,12 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     //Task별 댓글 페이징 조회
     Page<Comment> findByTaskId(Long taskId, Pageable pageable);
+
+    //Task별 댓글 페이징 조회 (fetch join으로 User, Task 함께 조회)
+    @Query(value = "SELECT c FROM Comment c " +
+                   "JOIN FETCH c.user " +
+                   "JOIN FETCH c.task " +
+                   "WHERE c.task.id = :taskId",
+           countQuery = "SELECT COUNT(c) FROM Comment c WHERE c.task.id = :taskId")
+    Page<Comment> findByTaskIdWithUserAndTask(Long taskId, Pageable pageable);
 }
