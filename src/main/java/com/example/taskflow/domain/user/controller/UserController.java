@@ -16,12 +16,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
 
     // 회원가입
-    @PostMapping("/api/users")
+    @PostMapping()
     public ResponseEntity<GlobalResponse<UserCreateResponseDto>> createUser(@Valid @RequestBody UserCreateRequestDto request){
         UserCreateResponseDto result = userService.createUser(request);
         return ResponseEntity
@@ -31,7 +32,7 @@ public class UserController {
 
     // 사용자 정보 조회 (JWT 전까지는 다른 사용자 조회 가능)
     // TODO: Path Parameter - JWT 토큰에서 추출한 ID로 수정
-    @GetMapping("/api/users/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<GlobalResponse<UserGetResponseDto>> getUser(@PathVariable long userId) {
         UserGetResponseDto result = userService.getUser(userId);
         return ResponseEntity
@@ -40,7 +41,7 @@ public class UserController {
     }
 
     // 사용자 목록 조회
-    @GetMapping("/api/users")
+    @GetMapping()
     public ResponseEntity<GlobalResponse<List<UserGetAllResponseDto>>> getAllUsers() {
         List<UserGetAllResponseDto> result = userService.getAllUsers();
         return ResponseEntity
