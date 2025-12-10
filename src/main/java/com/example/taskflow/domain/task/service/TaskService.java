@@ -9,6 +9,8 @@ import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.example.taskflow.domain.task.repository.TaskRepository;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,5 +48,19 @@ public class TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
         return TaskResponseDto.from(task, true);
+    }
+
+    @Transactional(readOnly=true)
+    public Page<TaskResponseDto> getAllTask(Pageable pageable, String status) {
+        Page<Task> tasks;
+        if(status == null) {
+            tasks = taskRepository.findAll(pageable);
+        } else {
+            if(!TaskStatus.isValid(status)) {
+                throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+            }
+            tasks = taskRepository.findAllByStatus(status,pageable);
+        }
+        return tasks.map(task -> TaskResponseDto.from(task, false));
     }
 }
