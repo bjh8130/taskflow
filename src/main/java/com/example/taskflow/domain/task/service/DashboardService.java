@@ -26,14 +26,16 @@ public class DashboardService {
         long todo = stats.getTodoTasks();
         long overdue = stats.getOverdueTasks();
 
-        long teamProgress = (total == 0)
-                ? 0
-                : (completed * 100) / total;
+        // TODO: 계산식 리팩토링
+        double teamProgress = (total == 0)
+                ? 0.0
+                : Math.round(((double) completed / total * 100.0) * 100.0) / 100.0;
 
         long myTotal = taskRepository.countByUserIdAndIsDeletedFalse(userId);
         long myCompleted = taskRepository.countByUserIdAndStatusAndIsDeletedFalse(userId, "DONE");
-        long completionRate = (myTotal == 0) ? 0 : (myCompleted * 100) / myTotal;
-
+        double completionRate = (myTotal == 0)
+                ? 0.0
+                : Math.round(((double) myCompleted / myTotal * 100.0) * 100.0) / 100.0;
 
         return new StatsGetResponseDto(
                 total,

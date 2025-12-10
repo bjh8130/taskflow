@@ -52,8 +52,8 @@ public class DashboardQueryRepository implements DashboardRepository {
                 inProgress,
                 todo,
                 overdue,
-                Expressions.constant(0L),
-                Expressions.constant(0L)
+                Expressions.constant(0.00),
+                Expressions.constant(0.00)
         )).from(task).where(task.isDeleted.isFalse()).fetchOne();
 
         if (stats == null) {

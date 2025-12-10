@@ -12,8 +12,8 @@ public class StatsGetResponseDto {
     private final long inProgressTasks;
     private final long todoTasks;
     private final long overdueTasks;
-    private final long teamProgress;
-    private final long completionRate;
+    private final double teamProgress;
+    private final double completionRate;
 
     public static StatsGetResponseDto from(
             long totalTasks,
@@ -21,8 +21,8 @@ public class StatsGetResponseDto {
             long inProgressTasks,
             long todoTasks,
             long overdueTasks,
-            long teamProgress,
-            long completionRate
+            double teamProgress,
+            double completionRate
     ) {
         return new StatsGetResponseDto(
                 totalTasks,
