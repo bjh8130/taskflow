@@ -154,7 +154,7 @@ public class CommentService {
 
         // 권한 검증: 본인 댓글만 삭제 가능
         if (!comment.getUser().getId().equals(userId)) {
-            throw new CustomException(ErrorCode.COMMENT_FORBIDDEN);
+            throw new CustomException(ErrorCode.COMMENT_DELETE_FORBIDDEN);
         }
 
         // 댓글 삭제

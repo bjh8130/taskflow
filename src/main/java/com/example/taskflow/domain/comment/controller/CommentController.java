@@ -93,13 +93,15 @@ public class CommentController {
      * DELETE /api/tasks/{taskId}/comments/{commentId}
      */
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(
+    public ResponseEntity<GlobalResponse<Void>> deleteComment(
             @PathVariable long taskId,
             @PathVariable long commentId,
             @RequestHeader("userId") Long userId) {
 
         commentService.deleteComment(commentId, userId);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(GlobalResponse.success(true, "댓글이 삭제되었습니다.", null));
     }
 }
