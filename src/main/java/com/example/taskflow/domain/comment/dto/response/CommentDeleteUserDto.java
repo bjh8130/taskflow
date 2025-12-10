@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class CommentDeleteUserDto {
 
     private Long id;
     private String username;
     private String name;
 
-    public static UserDto from(User user) {
-        return UserDto.builder()
+    public static CommentDeleteUserDto from(User user) {
+        return CommentDeleteUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .name(user.getName())
