@@ -2,8 +2,10 @@ package com.example.taskflow.domain.team.controller;
 
 import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.team.dto.request.TeamCreateRequestDto;
+import com.example.taskflow.domain.team.dto.request.TeamUpdateRequestDto;
 import com.example.taskflow.domain.team.dto.response.TeamCreateResponseDto;
 import com.example.taskflow.domain.team.dto.response.TeamReadResponseDto;
+import com.example.taskflow.domain.team.dto.response.TeamUpdateResponseDto;
 import com.example.taskflow.domain.team.service.TeamService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +44,15 @@ public class TeamController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "팀 조회 성공", result));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GlobalResponse<TeamUpdateResponseDto>> updateTeam(
+            @PathVariable Long id,
+            @RequestBody TeamUpdateRequestDto request) {
+        TeamUpdateResponseDto result = teamService.update(id, request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(GlobalResponse.success(true, "팀 정보가 수정되었습니다.", result));
     }
 }
