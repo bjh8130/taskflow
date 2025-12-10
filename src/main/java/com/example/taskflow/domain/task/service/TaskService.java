@@ -27,7 +27,7 @@ public class TaskService {
     @Transactional
     public TaskResponseDto createTask(TaskCreateRequestDto request) {
         Long userId= 1L;
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Task task = new Task(
                 request.getTitle(),
@@ -46,7 +46,7 @@ public class TaskService {
     }
     @Transactional(readOnly=true)
     public TaskResponseDto getTaskById(Long taskId) {
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
         return TaskResponseDto.from(task, true);
     }
@@ -55,18 +55,19 @@ public class TaskService {
     public Page<TaskResponseDto> getAllTask(Pageable pageable, String status) {
         Page<Task> tasks;
         if(status == null) {
-            tasks = taskRepository.findAll(pageable);
+            tasks = taskRepository.findAllByIsDeletedFalse(pageable);
         } else {
             if(!TaskStatus.isValid(status)) {
                 throw new CustomException(ErrorCode.INVALID_ARGUMENT);
             }
-            tasks = taskRepository.findAllByStatus(status,pageable);
+            tasks = taskRepository.findAllByStatusAndIsDeletedFalse(status,pageable);
         }
         return tasks.map(task -> TaskResponseDto.from(task, false));
     }
+
     @Transactional
     public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request) {
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
         //TODO 인증인가 구현 후 수정 권한 예외처리 예정
 
@@ -80,11 +81,12 @@ public class TaskService {
         return TaskResponseDto.from(task, false);
     }
 
+    @Transactional
     public void deleteTask(Long taskId) {
         Long userId= 1L;
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
 
         if (!task.getUser().getId().equals(user.getId())) {
