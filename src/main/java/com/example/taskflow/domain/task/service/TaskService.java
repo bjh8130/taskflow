@@ -2,14 +2,14 @@ package com.example.taskflow.domain.task.service;
 
 import com.example.taskflow.common.exception.*;
 import com.example.taskflow.domain.task.dto.request.TaskCreateRequestDTO;
-import com.example.taskflow.domain.task.dto.response.TaskCreateResponseDto;
+import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
 import com.example.taskflow.domain.task.entity.Task;
 import com.example.taskflow.domain.task.enums.TaskPriority;
 import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.example.taskflow.domain.task.repository.TaskRepository;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class TaskService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TaskCreateResponseDto createTask(TaskCreateRequestDTO request) {
+    public TaskResponseDto createTask(TaskCreateRequestDTO request) {
         Long userId= 1L;
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
@@ -39,6 +39,12 @@ public class TaskService {
                         :LocalDateTime.now().plusDays(7)
         );
         Task savedTask = taskRepository.save(task);
-        return TaskCreateResponseDto.from(savedTask);
+        return TaskResponseDto.from(savedTask, false);
+    }
+    @Transactional(readOnly=true)
+    public TaskResponseDto getTaskById(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+        return TaskResponseDto.from(task, true);
     }
 }
