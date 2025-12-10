@@ -6,6 +6,8 @@ import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
 import com.example.taskflow.domain.task.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,18 @@ public class TaskController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "작업 조회 성공", result));
+    }
+
+    @GetMapping
+    public ResponseEntity<GlobalResponse<Page<TaskResponseDto>>> getAllTasks(
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.ASC)
+            Pageable pageable,
+            @RequestParam(required = false) String status
+    ) {
+        Page<TaskResponseDto> result = taskService.getAllTask(pageable, status);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(GlobalResponse.success(true, "작업 목록 조회 성공",result));
     }
 }
 
