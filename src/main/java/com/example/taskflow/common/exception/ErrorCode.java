@@ -14,6 +14,7 @@ public enum ErrorCode {
     TASK_NOT_FOUND(404, "존재하지 않는 작업입니다."),
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(404, "댓글을 찾을 수 없습니다."),
+    TEAM_NOT_FOUND(404, "팀을 찾을 수 없습니다."),
 
     //------403-----------------------
     USER_NOT_MATCH(403, "접근 권한이 없습니다"),
