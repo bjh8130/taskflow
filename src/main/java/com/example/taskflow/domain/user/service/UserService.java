@@ -54,9 +54,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserGetResponseDto getUser(long userId) {
 
-        // TODO: Soft Delete 사용자 예외 처리 추가
-
-        User user = userRepository.findById(userId).orElseThrow(()
+        User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(()
                 -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return UserGetResponseDto.from(user);
@@ -66,16 +64,14 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserGetAllResponseDto> getAllUsers() {
 
-        // TODO: Soft Delete 사용자 예외 처리 추가
-
-        return userRepository.findAll().stream().map(UserGetAllResponseDto::from).toList();
+        return userRepository.findAllByIsDeletedFalse().stream().map(UserGetAllResponseDto::from).toList();
     }
 
     // 사용자 정보 수정
     @Transactional
     public UserUpdateResponseDto updateUser(long userId, UserUpdateRequestDto request) {
 
-        User user = userRepository.findById(userId).orElseThrow(
+        User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -89,5 +85,16 @@ public class UserService {
         user.update(request.getName(), request.getEmail());
 
         return UserUpdateResponseDto.from(user);
+    }
+
+    // 회원 탈퇴
+    @Transactional
+    public void deleteUser(long userId) {
+
+        User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        user.softDelete();
     }
 }

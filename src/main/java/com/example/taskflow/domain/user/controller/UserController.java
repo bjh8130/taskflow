@@ -62,4 +62,14 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "사용자 정보 수정이 완료되었습니다.", result));
     }
+
+    // 회원 탈퇴
+    // TODO: Path Parameter - JWT 토큰에서 추출한 ID로 수정
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable long userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(GlobalResponse.success(true, "회원 탈퇴가 완료되었습니다.", null));
+    }
 }
