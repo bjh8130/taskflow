@@ -11,7 +11,6 @@ import com.example.taskflow.domain.user.dto.response.UserGetResponseDto;
 import com.example.taskflow.domain.user.dto.response.UserUpdateResponseDto;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
