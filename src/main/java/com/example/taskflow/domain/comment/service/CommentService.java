@@ -109,9 +109,10 @@ public class CommentService {
      */
     public CustomPageResponse<CommentGetResponseDto> getComments(Long taskId, int page, int size, String sort) {
         // 정렬 방향 결정
+        // sequence는 항상 ASC (부모 댓글 먼저, 그 다음 대댓글 순서대로)
         Sort sortBy = sort.equals("oldest")
                 ? Sort.by("groupId").ascending().and(Sort.by("sequence").ascending())
-                : Sort.by("groupId").descending().and(Sort.by("sequence").descending());
+                : Sort.by("groupId").descending().and(Sort.by("sequence").ascending());
 
         Pageable pageable = PageRequest.of(page, size, sortBy);
 

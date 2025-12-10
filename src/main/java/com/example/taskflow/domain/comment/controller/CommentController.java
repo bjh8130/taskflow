@@ -53,7 +53,8 @@ public class CommentController {
 
     /**
      * 댓글 목록 조회
-     * GET /api/tasks/{taskId}/comments
+     * GET /api/tasks/{taskId}/comments(기본 newest)
+     * /api/tasks/2/comments?page=0&size=10&sort=oldest
      */
     @GetMapping
     public ResponseEntity<GlobalResponse<CustomPageResponse<CommentGetResponseDto>>> getComments(
