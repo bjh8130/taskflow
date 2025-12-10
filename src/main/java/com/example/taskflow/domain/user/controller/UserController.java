@@ -22,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     // 회원가입
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<GlobalResponse<UserCreateResponseDto>> createUser(@Valid @RequestBody UserCreateRequestDto request){
         UserCreateResponseDto result = userService.createUser(request);
         return ResponseEntity
@@ -41,7 +41,7 @@ public class UserController {
     }
 
     // 사용자 목록 조회
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<GlobalResponse<List<UserGetAllResponseDto>>> getAllUsers() {
         List<UserGetAllResponseDto> result = userService.getAllUsers();
         return ResponseEntity
