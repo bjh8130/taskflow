@@ -2,7 +2,9 @@ package com.example.taskflow.domain.comment.service;
 
 import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
+import com.example.taskflow.common.response.CustomPageResponse;
 import com.example.taskflow.domain.comment.dto.request.CommentCreateRequestDto;
+import com.example.taskflow.domain.comment.dto.response.CommentGetResponseDto;
 import com.example.taskflow.domain.comment.dto.response.CommentResponseDto;
 import com.example.taskflow.domain.comment.entity.Comment;
 import com.example.taskflow.domain.comment.repository.CommentRepository;
@@ -11,8 +13,15 @@ import com.example.taskflow.domain.task.repository.TaskRepository;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -93,5 +102,39 @@ public class CommentService {
         Comment savedReply = commentRepository.save(reply);
 
         return CommentResponseDto.from(savedReply);
+    }
+
+    /**
+     * 댓글 목록 조회 (페이징)
+     */
+    public CustomPageResponse<CommentGetResponseDto> getComments(Long taskId, int page, int size, String sort) {
+        // 정렬 방향 결정
+        Sort sortBy = sort.equals("oldest")
+                ? Sort.by("groupId").ascending().and(Sort.by("sequence").ascending())
+                : Sort.by("groupId").descending().and(Sort.by("sequence").descending());
+
+        Pageable pageable = PageRequest.of(page, size, sortBy);
+
+        // 댓글 조회 (Task가 없으면 빈 페이지 반환)
+        Page<Comment> comments = commentRepository.findByTaskId(taskId, pageable);
+
+        // 댓글이 없으면 빈 페이지 반환
+        if (comments.isEmpty()) {
+            return CustomPageResponse.from(comments.map(CommentGetResponseDto::from));
+        }
+
+        // N+1 방지: User ID 추출 후 한 번에 조회
+        List<Long> userIds = comments.getContent().stream()
+                .map(comment -> comment.getUser().getId())
+                .distinct()
+                .collect(Collectors.toList());
+
+        // User들을 한 번에 조회 (IN 쿼리)
+        userRepository.findAllById(userIds);
+
+        // DTO 변환 (이미 영속성 컨텍스트에 로드되어 있어서 추가 쿼리 발생 안 함)
+        Page<CommentGetResponseDto> responseDtos = comments.map(CommentGetResponseDto::from);
+
+        return CustomPageResponse.from(responseDtos);
     }
 }
