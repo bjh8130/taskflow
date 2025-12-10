@@ -90,4 +90,14 @@ public class UserService {
 
         return UserUpdateResponseDto.from(user);
     }
+
+    // 회원 탈퇴
+    public void deleteUser(long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        user.softDelete();
+    }
 }
