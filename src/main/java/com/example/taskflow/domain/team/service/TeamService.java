@@ -16,12 +16,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class TeamService {
 
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
 
+    @Transactional
     public TeamCreateResponseDto save(TeamCreateRequestDto request) {
         if (teamRepository.existsByName(request.getName())) {
             throw new CustomException(ErrorCode.TEAMNAME_ALREADY_EXISTS);
