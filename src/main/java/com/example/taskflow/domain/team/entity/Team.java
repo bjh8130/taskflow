@@ -27,4 +27,12 @@ public class Team extends BaseEntity {
         this.description = description;
     }
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
 }
