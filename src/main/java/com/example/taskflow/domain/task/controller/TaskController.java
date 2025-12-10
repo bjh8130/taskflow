@@ -30,8 +30,8 @@ public class TaskController {
 
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<GlobalResponse<TaskResponseDto>> getOneTask(@PathVariable("id") Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<GlobalResponse<TaskResponseDto>> getOneTask(@PathVariable Long id) {
         TaskResponseDto result = taskService.getTaskById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -53,7 +53,7 @@ public class TaskController {
 
     @PutMapping("/{id}")
     public ResponseEntity<GlobalResponse<TaskResponseDto>> updateTask(
-            @PathVariable("id") Long id,
+            @PathVariable Long id,
             @RequestBody TaskUpdateRequestDto request
         ) {
         TaskResponseDto result = taskService.updateTask(id, request);
