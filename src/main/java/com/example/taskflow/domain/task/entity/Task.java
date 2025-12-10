@@ -53,15 +53,18 @@ public class Task extends BaseEntity {
     }
 
 
-    public void update(String title, String description, String status, String priority, LocalDateTime dueDate) {
+    public void update(String title, String description, String priority, LocalDateTime dueDate) {
         this.title = title;
         this.description = description;
-        this.status = status;
         this.priority = priority;
         this.dueDate = dueDate;
     }
 
     public void softDelete() {
         this.isDeleted = true;
+    }
+
+    public void updateStatus(String status) {
+        this.status = status;
     }
 }
