@@ -2,7 +2,6 @@ package com.example.taskflow.domain.task.repository;
 
 import com.example.taskflow.domain.task.dto.response.StatsGetResponseDto;
 import com.example.taskflow.domain.task.entity.QTask;
-import com.example.taskflow.domain.task.entity.Task;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;

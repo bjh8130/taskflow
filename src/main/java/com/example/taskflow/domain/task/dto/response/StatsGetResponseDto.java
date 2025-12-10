@@ -1,6 +1,5 @@
 package com.example.taskflow.domain.task.dto.response;
 
-import com.example.taskflow.domain.task.entity.Task;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
