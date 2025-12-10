@@ -3,8 +3,10 @@ package com.example.taskflow.domain.team.service;
 import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.domain.team.dto.request.TeamCreateRequestDto;
+import com.example.taskflow.domain.team.dto.request.TeamUpdateRequestDto;
 import com.example.taskflow.domain.team.dto.response.TeamCreateResponseDto;
 import com.example.taskflow.domain.team.dto.response.TeamReadResponseDto;
+import com.example.taskflow.domain.team.dto.response.TeamUpdateResponseDto;
 import com.example.taskflow.domain.team.entity.Team;
 import com.example.taskflow.domain.teamMember.repository.TeamMemberRepository;
 import com.example.taskflow.domain.team.repository.TeamRepository;
@@ -58,5 +60,23 @@ public class TeamService {
         List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
 
         return new TeamReadResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
+    }
+
+    @Transactional
+    public TeamUpdateResponseDto update(Long id, TeamUpdateRequestDto request) {
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+
+        List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
+
+        if (request.getName() != null) {
+            team.updateName(request.getName());
+        }
+
+        if (request.getDescription() != null) {
+            team.updateDescription(request.getDescription());
+        }
+
+        return new TeamUpdateResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
     }
 }

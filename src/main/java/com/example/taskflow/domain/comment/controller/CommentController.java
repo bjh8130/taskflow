@@ -3,8 +3,10 @@ package com.example.taskflow.domain.comment.controller;
 import com.example.taskflow.common.response.CustomPageResponse;
 import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.comment.dto.request.CommentCreateRequestDto;
+import com.example.taskflow.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.example.taskflow.domain.comment.dto.response.CommentGetResponseDto;
 import com.example.taskflow.domain.comment.dto.response.CommentResponseDto;
+import com.example.taskflow.domain.comment.dto.response.CommentUpdateResponseDto;
 import com.example.taskflow.domain.comment.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +67,24 @@ public class CommentController {
 
         CustomPageResponse<CommentGetResponseDto> result = commentService.getComments(taskId, page, size, sort);
         return ResponseEntity
-                .ok()
+                .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "댓글 목록을 조회했습니다.", result));
+    }
+
+    /**
+     * 댓글 수정
+     * PUT /api/tasks/{taskId}/comments/{commentId}
+     */
+    @PutMapping("/{commentId}")
+    public ResponseEntity<GlobalResponse<CommentUpdateResponseDto>> updateComment(
+            @PathVariable long taskId,
+            @PathVariable long commentId,
+            @RequestBody CommentUpdateRequestDto request,
+            @RequestHeader("userId") Long userId) {
+
+        CommentUpdateResponseDto result = commentService.updateComment(taskId, commentId, request, userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(GlobalResponse.success(true,"댓글이 수정되었습니다.",result));
     }
 }

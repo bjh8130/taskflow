@@ -4,8 +4,10 @@ import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.common.response.CustomPageResponse;
 import com.example.taskflow.domain.comment.dto.request.CommentCreateRequestDto;
+import com.example.taskflow.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.example.taskflow.domain.comment.dto.response.CommentGetResponseDto;
 import com.example.taskflow.domain.comment.dto.response.CommentResponseDto;
+import com.example.taskflow.domain.comment.dto.response.CommentUpdateResponseDto;
 import com.example.taskflow.domain.comment.entity.Comment;
 import com.example.taskflow.domain.comment.repository.CommentRepository;
 import com.example.taskflow.domain.task.entity.Task;
@@ -120,5 +122,25 @@ public class CommentService {
         Page<CommentGetResponseDto> responseDtos = comments.map(CommentGetResponseDto::from);
 
         return CustomPageResponse.from(responseDtos);
+    }
+
+    /**
+     * 댓글 수정
+     */
+    @Transactional
+    public CommentUpdateResponseDto updateComment(long taskId, long commentId, CommentUpdateRequestDto request, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+        // 권한 검증: 본인 댓글만 수정 가능
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.COMMENT_FORBIDDEN);
+        }
+
+        comment.updateComment(request.getContent());
+
+        Comment updatedComment = commentRepository.save(comment);
+
+        return CommentUpdateResponseDto.from(updatedComment);
     }
 }
