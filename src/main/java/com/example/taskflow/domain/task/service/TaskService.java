@@ -1,7 +1,8 @@
 package com.example.taskflow.domain.task.service;
 
 import com.example.taskflow.common.exception.*;
-import com.example.taskflow.domain.task.dto.request.TaskCreateRequestDTO;
+import com.example.taskflow.domain.task.dto.request.TaskCreateRequestDto;
+import com.example.taskflow.domain.task.dto.request.TaskUpdateRequestDto;
 import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
 import com.example.taskflow.domain.task.entity.Task;
 import com.example.taskflow.domain.task.enums.TaskPriority;
@@ -24,7 +25,7 @@ public class TaskService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TaskResponseDto createTask(TaskCreateRequestDTO request) {
+    public TaskResponseDto createTask(TaskCreateRequestDto request) {
         Long userId= 1L;
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
@@ -62,5 +63,20 @@ public class TaskService {
             tasks = taskRepository.findAllByStatus(status,pageable);
         }
         return tasks.map(task -> TaskResponseDto.from(task, false));
+    }
+    @Transactional
+    public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+        //TODO 인증인가 구현 후 수정 권한 예외처리 예정
+
+        task.update(
+                request.getTitle(),
+                request.getDescription(),
+                request.getStatus(),
+                request.getPriority(),
+                request.getDueDate()
+        );
+        return TaskResponseDto.from(task, false);
     }
 }
