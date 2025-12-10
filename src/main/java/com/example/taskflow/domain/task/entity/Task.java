@@ -60,4 +60,8 @@ public class Task extends BaseEntity {
         this.priority = priority;
         this.dueDate = dueDate;
     }
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
 }

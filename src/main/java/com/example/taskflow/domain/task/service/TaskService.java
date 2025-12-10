@@ -28,7 +28,7 @@ public class TaskService {
     public TaskResponseDto createTask(TaskCreateRequestDto request) {
         Long userId= 1L;
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Task task = new Task(
                 request.getTitle(),
                 request.getDescription(),
@@ -78,5 +78,22 @@ public class TaskService {
                 request.getDueDate()
         );
         return TaskResponseDto.from(task, false);
+    }
+
+    public void deleteTask(Long taskId) {
+        Long userId= 1L;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+
+        if (!task.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+        // 이미 삭제된 상태라면 그냥 종료 (멱등성 보장)
+        if (task.isDeleted()) {
+            return; // 아무 동작 X → 멱등성 유지
+        }
+        task.softDelete();
     }
 }
