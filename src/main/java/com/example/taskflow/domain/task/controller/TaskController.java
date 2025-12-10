@@ -20,10 +20,10 @@ public class TaskController {
     @PostMapping()
     public ResponseEntity<GlobalResponse<TaskCreateResponseDto>> createTask(@Valid @RequestBody TaskCreateRequestDTO request) {
 
-        TaskCreateResponseDto response = taskService.createTask(request);
+        TaskCreateResponseDto result = taskService.createTask(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(GlobalResponse.success(true, "Task 생성 성공",response));
+                .body(GlobalResponse.success(true, "Task 생성 성공", result));
 
     }
 }
