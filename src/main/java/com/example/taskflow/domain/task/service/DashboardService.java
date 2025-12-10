@@ -2,6 +2,7 @@ package com.example.taskflow.domain.task.service;
 
 import com.example.taskflow.domain.task.dto.response.StatsGetResponseDto;
 import com.example.taskflow.domain.task.repository.DashboardRepository;
+import com.example.taskflow.domain.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,10 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class DashboardService {
 
     private final DashboardRepository dashboardRepository;
+    private final TaskRepository taskRepository;
 
     // 대시보드 통계 조회
     @Transactional(readOnly = true)
-    public StatsGetResponseDto getStats() {
+    public StatsGetResponseDto getDashboard(long userId) {
 
         StatsGetResponseDto stats = dashboardRepository.getStats();
 
@@ -24,9 +26,14 @@ public class DashboardService {
         long todo = stats.getTodoTasks();
         long overdue = stats.getOverdueTasks();
 
-        long completionRate = (total == 0)
+        long teamProgress = (total == 0)
                 ? 0
                 : (completed * 100) / total;
+
+        long myTotal = taskRepository.countByUserIdAndIsDeletedFalse(userId);
+        long myCompleted = taskRepository.countByUserIdAndStatusAndIsDeletedFalse(userId, "DONE");
+        long completionRate = (myTotal == 0) ? 0 : (myCompleted * 100) / myTotal;
+
 
         return new StatsGetResponseDto(
                 total,
@@ -34,7 +41,7 @@ public class DashboardService {
                 inProgress,
                 todo,
                 overdue,
-                completionRate,
+                teamProgress,
                 completionRate
         );
     }
