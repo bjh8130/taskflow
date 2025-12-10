@@ -27,9 +27,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT COALESCE(MAX(c.sequence), 0) FROM Comment c WHERE c.groupId = :groupId")
     Long findMaxSequenceByGroupId(Long groupId);
 
-    //Task별 댓글 페이징 조회
-    Page<Comment> findByTaskId(Long taskId, Pageable pageable);
-
     //Task별 댓글 페이징 조회 (fetch join으로 User, Task 함께 조회)
     @Query(value = "SELECT c FROM Comment c " +
                    "JOIN FETCH c.user " +
