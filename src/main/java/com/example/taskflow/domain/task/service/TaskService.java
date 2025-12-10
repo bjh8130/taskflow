@@ -1,15 +1,18 @@
 package com.example.taskflow.domain.task.service;
 
 import com.example.taskflow.common.exception.*;
-import com.example.taskflow.domain.task.dto.request.TaskCreateRequestDTO;
-import com.example.taskflow.domain.task.dto.response.TaskCreateResponseDto;
+import com.example.taskflow.domain.task.dto.request.TaskCreateRequestDto;
+import com.example.taskflow.domain.task.dto.request.TaskUpdateRequestDto;
+import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
 import com.example.taskflow.domain.task.entity.Task;
 import com.example.taskflow.domain.task.enums.TaskPriority;
 import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.example.taskflow.domain.task.repository.TaskRepository;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +25,7 @@ public class TaskService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TaskCreateResponseDto createTask(TaskCreateRequestDTO request) {
+    public TaskResponseDto createTask(TaskCreateRequestDto request) {
         Long userId= 1L;
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
@@ -39,6 +42,41 @@ public class TaskService {
                         :LocalDateTime.now().plusDays(7)
         );
         Task savedTask = taskRepository.save(task);
-        return TaskCreateResponseDto.from(savedTask);
+        return TaskResponseDto.from(savedTask, false);
+    }
+    @Transactional(readOnly=true)
+    public TaskResponseDto getTaskById(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+        return TaskResponseDto.from(task, true);
+    }
+
+    @Transactional(readOnly=true)
+    public Page<TaskResponseDto> getAllTask(Pageable pageable, String status) {
+        Page<Task> tasks;
+        if(status == null) {
+            tasks = taskRepository.findAll(pageable);
+        } else {
+            if(!TaskStatus.isValid(status)) {
+                throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+            }
+            tasks = taskRepository.findAllByStatus(status,pageable);
+        }
+        return tasks.map(task -> TaskResponseDto.from(task, false));
+    }
+    @Transactional
+    public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+        //TODO 인증인가 구현 후 수정 권한 예외처리 예정
+
+        task.update(
+                request.getTitle(),
+                request.getDescription(),
+                request.getStatus(),
+                request.getPriority(),
+                request.getDueDate()
+        );
+        return TaskResponseDto.from(task, false);
     }
 }

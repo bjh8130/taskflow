@@ -3,7 +3,6 @@ package com.example.taskflow.domain.task.entity;
 import com.example.taskflow.common.entity.BaseEntity;
 import com.example.taskflow.domain.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,5 +53,11 @@ public class Task extends BaseEntity {
     }
 
 
-
+    public void update(String title, String description, String status, String priority, LocalDateTime dueDate) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.priority = priority;
+        this.dueDate = dueDate;
+    }
 }

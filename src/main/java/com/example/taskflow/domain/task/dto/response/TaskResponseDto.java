@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-public class TaskCreateResponseDto {
+public class TaskResponseDto {
     private final Long id;
     private final String title;
     private final String description;
@@ -22,15 +22,15 @@ public class TaskCreateResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private final LocalDateTime dueDate;
-    public static TaskCreateResponseDto from(Task task) {
-        return new TaskCreateResponseDto(
+    public static TaskResponseDto from(Task task, boolean includeEmail) {
+        return new TaskResponseDto(
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
                 task.getStatus(),
                 task.getPriority(),
                 task.getUser().getId(),
-                UserTaskResponseDto.from(task.getUser()),
+                UserTaskResponseDto.from(task.getUser(), includeEmail),
                 task.getCreatedAt(),
                 task.getUpdatedAt(),
                 task.getDueDate()
