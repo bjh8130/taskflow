@@ -62,5 +62,13 @@ public class TaskController {
                 .body(GlobalResponse.success(true, "작업이 수정되었습니다.", result));
 
     }
+
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<GlobalResponse<Void>> deleteTask(@PathVariable Long taskId) {
+        taskService.deleteTask(taskId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(GlobalResponse.success(true, "작업이 삭제되었습니다.", null));
+    }
 }
 
