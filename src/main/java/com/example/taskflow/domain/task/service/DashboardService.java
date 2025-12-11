@@ -1,10 +1,14 @@
 package com.example.taskflow.domain.task.service;
 
+import com.example.taskflow.common.exception.CustomException;
+import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.domain.task.dto.response.MyTaskGetResponseDto;
 import com.example.taskflow.domain.task.dto.response.MyTaskResponseDto;
 import com.example.taskflow.domain.task.dto.response.StatsGetResponseDto;
 import com.example.taskflow.domain.task.repository.DashboardRepository;
 import com.example.taskflow.domain.task.repository.TaskRepository;
+import com.example.taskflow.domain.user.entity.User;
+import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +23,7 @@ public class DashboardService {
 
     private final DashboardRepository dashboardRepository;
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
     // 대시보드 통계 조회
     @Transactional(readOnly = true)
@@ -57,6 +62,10 @@ public class DashboardService {
     // 내 작업 요약 조회
     @Transactional(readOnly = true)
     public MyTaskGetResponseDto getMyTasks(long userId) {
+
+        User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.USER_NOT_FOUND)
+        );
 
         LocalDate now = LocalDate.now();
         LocalDateTime start = now.atStartOfDay();
