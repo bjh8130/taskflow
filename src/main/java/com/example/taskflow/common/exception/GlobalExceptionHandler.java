@@ -1,6 +1,7 @@
 package com.example.taskflow.common.exception;
 
 import com.example.taskflow.common.response.GlobalResponse;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,5 +21,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new GlobalResponse<>(false, errorMessage, null));
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleCustomException(CustomException e) {
+        ErrorCode errorCode = e.getErrorCode();
+
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(GlobalResponse.exception(false, errorCode));
     }
 }

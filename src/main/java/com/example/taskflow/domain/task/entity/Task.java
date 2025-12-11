@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.task.entity;
 
+import com.example.taskflow.common.entity.BaseEntity;
 import com.example.taskflow.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "tasks")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Task {
+public class Task extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,4 +53,18 @@ public class Task {
     }
 
 
+    public void update(String title, String description, String priority, LocalDateTime dueDate) {
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.dueDate = dueDate;
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
+
+    public void updateStatus(String status) {
+        this.status = status;
+    }
 }

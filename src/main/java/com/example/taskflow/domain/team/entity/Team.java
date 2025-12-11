@@ -16,7 +16,7 @@ public class Team extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true)
     private String name;
 
     @Column(columnDefinition = "TEXT")
@@ -24,6 +24,14 @@ public class Team extends BaseEntity {
 
     public Team(String name, String description) {
         this.name = name;
+        this.description = description;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateDescription(String description) {
         this.description = description;
     }
 
