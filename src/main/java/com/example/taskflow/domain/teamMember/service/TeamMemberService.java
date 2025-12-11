@@ -26,27 +26,30 @@ public class TeamMemberService {
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 팀 멤버 추가 Method
+     */
     @Transactional
     public TeamMemberCreateResponseDto add(Long teamId, TeamMemberCreateRequestDto request) {
 
-        // 팀 존재 확인
+        // 1. 팀 존재 여부 확인
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
-        // 유저 존재 확인
+        // 2. 유저 존재 여부 확인
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 이미 팀에 속한 유저인지 확인
+        // 3. 이미 팀에 속한 유저인지 확인
         if(teamMemberRepository.existsByTeamIdAndUserId(teamId, request.getUserId())) {
             throw new CustomException(ErrorCode.TEAM_MEMBER_ALREADY_EXISTS);
         }
 
-        // 팀멤버 생성 및 저장
+        // 4. 팀 멤버 생성 및 저장
         TeamMember teamMember = new TeamMember(team, user);
         teamMemberRepository.save(teamMember);
 
-        // 팀멤버 목록 불러오기
+        // 5. 팀멤버 목록 불러오기
         List<User> userLists = teamMemberRepository.findUserByTeamId(team.getId());
         List<UserTeamResponseDto> members = new ArrayList<>();
 
@@ -60,19 +63,22 @@ public class TeamMemberService {
                     userList.getCreatedAt()));
         }
 
-        // 결과값 반환
+        // 6. 결과 값 반환
         return new TeamMemberCreateResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
 
     }
 
+    /**
+     * 팀 멤버 조회 Method
+     */
     @Transactional(readOnly = true)
     public List<UserTeamResponseDto> findMembers(Long teamId) {
 
-        // 팀 존재 확인
+        // 1. 팀 존재 여부 확인
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
-        // 팀멤버 목록 불러오기
+        // 2. 팀 멤버 목록 불러오기
         List<User> userLists = teamMemberRepository.findUserByTeamId(team.getId());
         List<UserTeamResponseDto> members = new ArrayList<>();
 
@@ -86,6 +92,27 @@ public class TeamMemberService {
                     userList.getCreatedAt()));
         }
 
+        // 3. 결과 값 반환
         return members;
+    }
+
+    /**
+     * 팀 멤버 삭제 Method
+     */
+    @Transactional
+    public void delete(Long teamId, Long userId) {
+
+        // 1. 팀 존재 여부 확인
+        if (!teamRepository.existsById(teamId)) {
+            throw new CustomException(ErrorCode.TEAM_NOT_FOUND);
+        }
+
+        // 2. 팀에 속한 멤버인지 확인
+        TeamMember teamMember = teamMemberRepository.findByTeamIdAndUserId(teamId, userId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.TEAM_MEMBER_NOT_FOUND));
+
+        // 3. 결과 값 반환
+        teamMemberRepository.deleteById(teamMember.getId());
+
     }
 }
