@@ -97,4 +97,10 @@ public class UserService {
 
         user.softDelete();
     }
+
+    // 추가 가능한 사용자 조회
+    public List<UserGetAllResponseDto> getAvailableUsers(Long teamId) {
+
+        return userRepository.findAllAvailableUsers(teamId).stream().map(UserGetAllResponseDto::from).toList();
+    }
 }

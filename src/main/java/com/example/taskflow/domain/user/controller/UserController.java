@@ -72,4 +72,13 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "회원 탈퇴가 완료되었습니다.", null));
     }
+
+    // 추가 가능한 사용자 조회
+    @GetMapping("/available")
+    public ResponseEntity<GlobalResponse<List<UserGetAllResponseDto>>> getAvailableUsers(@RequestParam(required = false) Long teamId) {
+        List<UserGetAllResponseDto> result = userService.getAvailableUsers(teamId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(GlobalResponse.success(true, "추가 가능한 사용자 조회가 완료되었습니다.", result));
+    }
 }
