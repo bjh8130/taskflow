@@ -8,12 +8,14 @@ import com.example.taskflow.domain.teamMember.dto.request.TeamMemberCreateReques
 import com.example.taskflow.domain.teamMember.dto.response.TeamMemberCreateResponseDto;
 import com.example.taskflow.domain.teamMember.entity.TeamMember;
 import com.example.taskflow.domain.teamMember.repository.TeamMemberRepository;
+import com.example.taskflow.domain.user.dto.response.UserTeamResponseDto;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,7 +47,18 @@ public class TeamMemberService {
         teamMemberRepository.save(teamMember);
 
         // 팀멤버 목록 불러오기
-        List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
+        List<User> userLists = teamMemberRepository.findUserByTeamId(team.getId());
+        List<UserTeamResponseDto> members = new ArrayList<>();
+
+        for (User userList : userLists) {
+            members.add(new UserTeamResponseDto(
+                    userList.getId(),
+                    userList.getUsername(),
+                    userList.getName(),
+                    userList.getEmail(),
+                    userList.getRole(),
+                    userList.getCreatedAt()));
+        }
 
         // 결과값 반환
         return new TeamMemberCreateResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);

@@ -34,7 +34,7 @@ public class TeamService {
         Team team = new Team(request.getName(), request.getDescription());
         teamRepository.save(team);
 
-        List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
+        List<User> members = teamMemberRepository.findUserByTeamId(team.getId());
 
         return new TeamCreateResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
     }
@@ -45,7 +45,7 @@ public class TeamService {
         List<TeamReadResponseDto> dtos = new ArrayList<>();
 
         for (Team team : teams) {
-            List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
+            List<User> members = teamMemberRepository.findUserByTeamId(team.getId());
             dtos.add(new TeamReadResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members));
         }
 
@@ -57,7 +57,7 @@ public class TeamService {
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
-        List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
+        List<User> members = teamMemberRepository.findUserByTeamId(team.getId());
 
         return new TeamReadResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
     }
@@ -67,7 +67,7 @@ public class TeamService {
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
-        List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
+        List<User> members = teamMemberRepository.findUserByTeamId(team.getId());
 
         if (request.getName() != null) {
             team.updateName(request.getName());
