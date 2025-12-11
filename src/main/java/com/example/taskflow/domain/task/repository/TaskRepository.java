@@ -31,5 +31,12 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
        OR LOWER(t.description) LIKE LOWER(CONCAT('%', :query, '%'))
     """)
     List<Task> searchTasks(String query);
-}
 
+    List<Task> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    List<Task> findByDueDateBetweenAndIsDeletedFalse(LocalDateTime start, LocalDateTime end);
+
+    List<Task> findByCreatedAtLessThanEqualAndIsDeletedFalse(LocalDateTime date);
+
+    List<Task> findByCompletedDateBetweenAndIsDeletedFalse(LocalDateTime start, LocalDateTime end);
+}
