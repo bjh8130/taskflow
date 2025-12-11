@@ -10,6 +10,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
+/**
+ * Task 도메인을 표현하는 JPA 엔티티입니다.
+ * 제목, 내용, 상태, 우선순위, 담당자 등 작업의 주요 속성을 가지며 상태 변경 및 soft delete 기능을 제공합니다.
+ */
 @Entity
 @Getter
 @Table(name = "tasks")
