@@ -41,6 +41,10 @@ public class Task extends BaseEntity {
     private LocalDateTime dueDate;
 
     @Column
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime completedDate;
+
+    @Column
     private boolean isDeleted = false;
 
     public Task(String title, String description, String status, String priority, User user, LocalDateTime dueDate) {
@@ -66,5 +70,17 @@ public class Task extends BaseEntity {
 
     public void updateStatus(String status) {
         this.status = status;
+        // DONE으로 변경 시 완료 시간 기록
+        if ("DONE".equals(status) && this.completedDate == null) {
+            this.completedDate = LocalDateTime.now();
+        }
+        // DONE이 아닌 상태로 변경 시 완료 시간 제거
+        else if (!"DONE".equals(status)) {
+            this.completedDate = null;
+        }
+    }
+
+    public boolean isCompleted() {
+        return "DONE".equals(this.status);
     }
 }
