@@ -25,4 +25,10 @@ public interface UserRepository extends JpaRepository<User,Long> {
        OR LOWER(u.name) LIKE LOWER(CONCAT('%', :query, '%'))
     """)
     List<User> searchUsers(String query);
+
+    List<User> findByName(String name);
+
+    Optional<User> findByUsername(String username);
+
+
 }

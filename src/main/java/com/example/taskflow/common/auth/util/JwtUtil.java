@@ -1,9 +1,8 @@
 package com.example.taskflow.common.auth.util;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.JwtParser;
+import com.example.taskflow.domain.user.enums.UserRole;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
