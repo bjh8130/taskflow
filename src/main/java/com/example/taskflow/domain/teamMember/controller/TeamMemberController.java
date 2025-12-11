@@ -19,6 +19,9 @@ public class TeamMemberController {
 
     private final TeamMemberService teamMemberService;
 
+    /**
+     * 팀 멤버 추가 API
+     */
     @PostMapping
     public ResponseEntity<GlobalResponse<TeamMemberCreateResponseDto>> addTeamMember(
             @PathVariable Long teamId,
@@ -29,6 +32,9 @@ public class TeamMemberController {
                 .body(GlobalResponse.success(true, "팀 멤버가 추가되었습니다.", result));
     }
 
+    /**
+     * 팀 멤버 조회 API
+     */
     @GetMapping
     public ResponseEntity<GlobalResponse<List<UserTeamResponseDto>>> getTeamMembers(
             @PathVariable Long teamId) {
@@ -38,6 +44,9 @@ public class TeamMemberController {
                 .body(GlobalResponse.success(true, "팀 멤버 조회 성공", result));
     }
 
+    /**
+     * 팀 멤버 삭제 API
+     */
     @DeleteMapping("/{userId}")
     public ResponseEntity<GlobalResponse<Void>> deleteTeamMembers(
             @PathVariable Long teamId,
