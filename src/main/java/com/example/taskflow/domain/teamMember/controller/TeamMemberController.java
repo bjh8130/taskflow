@@ -37,4 +37,14 @@ public class TeamMemberController {
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "팀 멤버 조회 성공", result));
     }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<GlobalResponse<Void>> deleteTeamMembers(
+            @PathVariable Long teamId,
+            @PathVariable Long userId) {
+        teamMemberService.delete(teamId, userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(GlobalResponse.success(true, "팀 멤버가 제거되었습니다.", null));
+    }
 }

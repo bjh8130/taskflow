@@ -107,6 +107,6 @@ public class TeamService {
             throw new CustomException(ErrorCode.TEAM_NOT_EMPTY);
         }
 
-        teamRepository.deleteById(id);
+        teamMemberRepository.deleteById(id);
     }
 }

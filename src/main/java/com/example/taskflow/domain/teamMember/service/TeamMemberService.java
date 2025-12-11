@@ -88,4 +88,18 @@ public class TeamMemberService {
 
         return members;
     }
+
+    @Transactional
+    public void delete(Long teamId, Long userId) {
+
+        if (!teamRepository.existsById(teamId)) {
+            throw new CustomException(ErrorCode.TEAM_NOT_FOUND);
+        }
+
+        TeamMember teamMember = teamMemberRepository.findByTeamIdAndUserId(teamId, userId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.TEAM_MEMBER_NOT_FOUND));
+
+        teamMemberRepository.deleteById(teamMember.getId());
+
+    }
 }
