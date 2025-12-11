@@ -10,6 +10,7 @@ public enum ErrorCode {
     ALREADY_LIKED(409, "이미 좋아요 되어있습니다."),
     USERNAME_ALREADY_EXISTS(409, "이미 존재하는 사용자 아이디입니다."),
     TEAMNAME_ALREADY_EXISTS(409, "이미 존재하는 팀 이름입니다."),
+    TEAM_NOT_EMPTY(409, "팀에 멤버가 존재하여 삭제할 수 없습니다."),
     //------404-----------------------
     TASK_NOT_FOUND(404, "존재하지 않는 작업입니다."),
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
