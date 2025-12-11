@@ -64,4 +64,28 @@ public class TeamMemberService {
         return new TeamMemberCreateResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
 
     }
+
+    @Transactional(readOnly = true)
+    public List<UserTeamResponseDto> findMembers(Long teamId) {
+
+        // 팀 존재 확인
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+
+        // 팀멤버 목록 불러오기
+        List<User> userLists = teamMemberRepository.findUserByTeamId(team.getId());
+        List<UserTeamResponseDto> members = new ArrayList<>();
+
+        for (User userList : userLists) {
+            members.add(new UserTeamResponseDto(
+                    userList.getId(),
+                    userList.getUsername(),
+                    userList.getName(),
+                    userList.getEmail(),
+                    userList.getRole(),
+                    userList.getCreatedAt()));
+        }
+
+        return members;
+    }
 }
