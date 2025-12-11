@@ -1,7 +1,6 @@
 package com.example.taskflow.domain.comment.dto.response;
 
 import com.example.taskflow.domain.comment.entity.Comment;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -22,6 +22,7 @@ public enum ErrorCode {
     PASSWORD_NOT_MATCH(403, "비밀번호가 일치하지 않습니다."),
     FORBIDDEN(403, "접근 권한이 없습니다"),
     COMMENT_FORBIDDEN(403, "댓글을 수정할 권한이 없습니다."),
+    COMMENT_DELETE_FORBIDDEN(403, "댓글을 삭제할 권한이 없습니다."),
     //------401-----------------------
     LOGIN_REQUIRED(401, "로그인한 유저만 사용할 수 있는 기능입니다"),
     //------400-----------------------
