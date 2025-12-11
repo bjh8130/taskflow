@@ -2,10 +2,8 @@ package com.example.taskflow.domain.task.controller;
 
 import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.task.dto.response.MyTaskGetResponseDto;
-import com.example.taskflow.domain.task.dto.response.MyTaskResponseDto;
 import com.example.taskflow.domain.task.dto.response.StatsGetResponseDto;
 import com.example.taskflow.domain.task.service.DashboardService;
-import com.example.taskflow.domain.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class DashboardController {
 
     private final DashboardService dashboardService;
-    private final TaskService taskService;
 
     // 대시보드 통계 조회
     // TODO: JWT 완료 시 PathVariable 제거

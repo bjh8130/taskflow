@@ -63,15 +63,15 @@ public class DashboardService {
         LocalDateTime end = now.plusDays(1).atStartOfDay();
 
         List<MyTaskResponseDto> todayTasks = taskRepository
-                .findAllByUserIdAndIsDeletedFalseAndDueDateBetween(userId, start, end)
+                .findAllByUserIdAndIsDeletedFalseAndDueDateGreaterThanEqualAndDueDateLessThan(userId, start, end)
                 .stream().map(MyTaskResponseDto::from).toList();
 
         List<MyTaskResponseDto> upcomingTasks = taskRepository
-                .findAllByUserIdAndIsDeletedFalseAndDueDateAfter(userId, end)
+                .findAllByUserIdAndIsDeletedFalseAndDueDateGreaterThanEqual(userId, end)
                 .stream().map(MyTaskResponseDto::from).toList();
 
         List<MyTaskResponseDto> overdueTasks = taskRepository
-                .findAllByUserIdAndIsDeletedFalseAndDueDateBeforeAndStatusNot(userId, start, "DONE")
+                .findAllByUserIdAndIsDeletedFalseAndDueDateLessThanAndStatusNot(userId, start, "DONE")
                 .stream().map(MyTaskResponseDto::from).toList();
 
         return new MyTaskGetResponseDto(todayTasks, upcomingTasks, overdueTasks);
