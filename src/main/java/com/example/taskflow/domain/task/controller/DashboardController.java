@@ -35,6 +35,6 @@ public class DashboardController {
         MyTaskGetResponseDto result = dashboardService.getMyTasks(userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(GlobalResponse.success(true, "내 작업 요약 조회가 완료되었습니다.", result));
+                .body(GlobalResponse.success(true, "내 작업 요약 조회 성공", result));
     }
 }
