@@ -1,8 +1,7 @@
 package com.example.taskflow.domain.task.service;
 
 import com.example.taskflow.common.exception.*;
-import com.example.taskflow.domain.task.dto.request.TaskCreateRequestDto;
-import com.example.taskflow.domain.task.dto.request.TaskUpdateRequestDto;
+import com.example.taskflow.domain.task.dto.request.*;
 import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
 import com.example.taskflow.domain.task.entity.Task;
 import com.example.taskflow.domain.task.enums.TaskPriority;
@@ -27,8 +26,8 @@ public class TaskService {
     @Transactional
     public TaskResponseDto createTask(TaskCreateRequestDto request) {
         Long userId= 1L;
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Task task = new Task(
                 request.getTitle(),
                 request.getDescription(),
@@ -46,7 +45,7 @@ public class TaskService {
     }
     @Transactional(readOnly=true)
     public TaskResponseDto getTaskById(Long taskId) {
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
         return TaskResponseDto.from(task, true);
     }
@@ -55,28 +54,57 @@ public class TaskService {
     public Page<TaskResponseDto> getAllTask(Pageable pageable, String status) {
         Page<Task> tasks;
         if(status == null) {
-            tasks = taskRepository.findAll(pageable);
+            tasks = taskRepository.findAllByIsDeletedFalse(pageable);
         } else {
             if(!TaskStatus.isValid(status)) {
-                throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+                throw new CustomException(ErrorCode.INVALID_ARGUMENT_STATUS);
             }
-            tasks = taskRepository.findAllByStatus(status,pageable);
+            tasks = taskRepository.findAllByStatusAndIsDeletedFalse(status,pageable);
         }
         return tasks.map(task -> TaskResponseDto.from(task, false));
     }
+
     @Transactional
     public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request) {
-        Task task = taskRepository.findById(taskId)
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
         //TODO 인증인가 구현 후 수정 권한 예외처리 예정
 
         task.update(
                 request.getTitle(),
                 request.getDescription(),
-                request.getStatus(),
                 request.getPriority(),
                 request.getDueDate()
         );
+        return TaskResponseDto.from(task, false);
+    }
+
+    @Transactional
+    public void deleteTask(Long taskId) {
+        Long userId= 1L;
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+
+        if (!task.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+        // 이미 삭제된 상태라면 그냥 종료 (멱등성 보장)
+        if (task.isDeleted()) {
+            return; // 아무 동작 X → 멱등성 유지
+        }
+        task.softDelete();
+    }
+
+    @Transactional
+    public TaskResponseDto updateTaskStatus(Long taskId, TaskStatusRequestDto request) {
+        if(!TaskStatus.isValid(request.getStatus())) {
+            throw new CustomException(ErrorCode.INVALID_ARGUMENT_STATUS);
+        }
+        Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+        task.updateStatus(request.getStatus());
         return TaskResponseDto.from(task, false);
     }
 }
