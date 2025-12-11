@@ -11,4 +11,8 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     Page<Task> findAllByIsDeletedFalse(Pageable pageable);
     Page<Task> findAllByStatusAndIsDeletedFalse(String status, Pageable pageable);
     Optional<Task> findByIdAndIsDeletedFalse(Long id);
+
+    long countByUserIdAndStatusAndIsDeletedFalse(Long userId, String status);
+
+    long countByUserIdAndIsDeletedFalse(long userId);
 }
