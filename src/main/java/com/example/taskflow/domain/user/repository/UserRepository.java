@@ -25,4 +25,12 @@ public interface UserRepository extends JpaRepository<User,Long> {
        OR LOWER(u.name) LIKE LOWER(CONCAT('%', :query, '%'))
     """)
     List<User> searchUsers(String query);
+
+    @Query("""
+    SELECT u FROM User u
+    WHERE u.isDeleted = false
+    AND u.id NOT IN (
+        SELECT tm.user.id FROM TeamMember tm WHERE tm.team.id = :teamId)
+    """)
+    List<User> findAllAvailableUsers(long teamId);
 }
