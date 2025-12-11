@@ -1,6 +1,6 @@
 package com.example.taskflow.domain.team.dto.response;
 
-import com.example.taskflow.domain.user.entity.User;
+import com.example.taskflow.domain.user.dto.response.UserTeamResponseDto;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -13,10 +13,10 @@ public class TeamCreateResponseDto {
     private final String name;
     private final String description;
     private final LocalDateTime createdAt;
-    private final List<User> members;
+    private final List<UserTeamResponseDto> members;
 
 
-    public TeamCreateResponseDto(Long id, String name, String description, LocalDateTime createdAt, List<User> members) {
+    public TeamCreateResponseDto(Long id, String name, String description, LocalDateTime createdAt, List<UserTeamResponseDto> members) {
         this.id = id;
         this.name = name;
         this.description = description;
