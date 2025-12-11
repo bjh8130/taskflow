@@ -1,11 +1,17 @@
 package com.example.taskflow.domain.task.service;
 
+import com.example.taskflow.domain.task.dto.response.MyTaskGetResponseDto;
+import com.example.taskflow.domain.task.dto.response.MyTaskResponseDto;
 import com.example.taskflow.domain.task.dto.response.StatsGetResponseDto;
 import com.example.taskflow.domain.task.repository.DashboardRepository;
 import com.example.taskflow.domain.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,5 +52,28 @@ public class DashboardService {
                 teamProgress,
                 completionRate
         );
+    }
+
+    // 내 작업 요약 조회
+    @Transactional(readOnly = true)
+    public MyTaskGetResponseDto getMyTasks(long userId) {
+
+        LocalDate now = LocalDate.now();
+        LocalDateTime start = now.atStartOfDay();
+        LocalDateTime end = now.plusDays(1).atStartOfDay();
+
+        List<MyTaskResponseDto> todayTasks = taskRepository
+                .findAllByUserIdAndIsDeletedFalseAndDueDateBetween(userId, start, end)
+                .stream().map(MyTaskResponseDto::from).toList();
+
+        List<MyTaskResponseDto> upcomingTasks = taskRepository
+                .findAllByUserIdAndIsDeletedFalseAndDueDateAfter(userId, end)
+                .stream().map(MyTaskResponseDto::from).toList();
+
+        List<MyTaskResponseDto> overdueTasks = taskRepository
+                .findAllByUserIdAndIsDeletedFalseAndDueDateBeforeAndStatusNot(userId, start, "DONE")
+                .stream().map(MyTaskResponseDto::from).toList();
+
+        return new MyTaskGetResponseDto(todayTasks, upcomingTasks, overdueTasks);
     }
 }
