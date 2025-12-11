@@ -55,4 +55,12 @@ public class TeamController {
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "팀 정보가 수정되었습니다.", result));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<GlobalResponse<Void>> deleteTeam(@PathVariable Long id) {
+        teamService.delete(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(GlobalResponse.success(true, "팀이 삭제되었습니다.", null));
+    }
 }

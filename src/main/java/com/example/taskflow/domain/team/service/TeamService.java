@@ -79,4 +79,17 @@ public class TeamService {
 
         return new TeamUpdateResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
     }
+
+    @Transactional
+    public void delete(Long id) {
+        if (!teamRepository.existsById(id)) {
+            throw new CustomException(ErrorCode.TEAM_NOT_FOUND);
+        }
+
+        if (teamMemberRepository.existsByTeamId(id)) {
+            throw new CustomException(ErrorCode.TEAM_NOT_EMPTY);
+        }
+
+        teamRepository.deleteById(id);
+    }
 }
