@@ -74,8 +74,8 @@ public class UserController {
     }
 
     // 추가 가능한 사용자 조회
-    @GetMapping("/available/{teamId}")
-    public ResponseEntity<GlobalResponse<List<UserGetAllResponseDto>>> getAvailableUsers(@PathVariable long teamId) {
+    @GetMapping("/available")
+    public ResponseEntity<GlobalResponse<List<UserGetAllResponseDto>>> getAvailableUsers(@RequestParam(required = false) Long teamId) {
         List<UserGetAllResponseDto> result = userService.getAvailableUsers(teamId);
         return ResponseEntity
                 .status(HttpStatus.OK)

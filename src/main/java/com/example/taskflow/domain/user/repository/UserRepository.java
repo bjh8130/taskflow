@@ -3,6 +3,7 @@ package com.example.taskflow.domain.user.repository;
 import com.example.taskflow.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,5 +33,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
     AND u.id NOT IN (
         SELECT tm.user.id FROM TeamMember tm WHERE tm.team.id = :teamId)
     """)
-    List<User> findAllAvailableUsers(long teamId);
+    List<User> findAllAvailableUsers(@Param("teamId") Long teamId);
 }
