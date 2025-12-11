@@ -35,6 +35,7 @@ public enum ErrorCode {
     PARENT_COMMENT_REQUIRED(400, "대댓글 생성 시 부모 댓글 ID는 필수입니다."),
     COMMENT_DEPTH_EXCEEDED(400, "대댓글에 대댓글은 달 수 없습니다."),
     INVALID_ARGUMENT_STATUS(400, "유효하지 않은 상태값입니다.."),
+    INVALID_ARGUMENT_QUERY(400, "검색어를 입력해 주세요")
     ;
     private final int status;
     private final String message;
