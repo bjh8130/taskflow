@@ -10,6 +10,7 @@ import com.example.taskflow.domain.team.dto.response.TeamUpdateResponseDto;
 import com.example.taskflow.domain.team.entity.Team;
 import com.example.taskflow.domain.teamMember.repository.TeamMemberRepository;
 import com.example.taskflow.domain.team.repository.TeamRepository;
+import com.example.taskflow.domain.user.dto.response.UserTeamResponseDto;
 import com.example.taskflow.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,11 @@ public class TeamService {
         Team team = new Team(request.getName(), request.getDescription());
         teamRepository.save(team);
 
-        List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
+        List<User> users = teamMemberRepository.findUserByTeamId(team.getId());
+        List<UserTeamResponseDto> members = new ArrayList<>();
+        for(User user : users) {
+            members.add(new UserTeamResponseDto(user.getId(), user.getUsername(), user.getName(), user.getEmail(), user.getRole(), user.getCreatedAt()));
+        }
 
         return new TeamCreateResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
     }
@@ -45,7 +50,11 @@ public class TeamService {
         List<TeamReadResponseDto> dtos = new ArrayList<>();
 
         for (Team team : teams) {
-            List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
+            List<User> users = teamMemberRepository.findUserByTeamId(team.getId());
+            List<UserTeamResponseDto> members = new ArrayList<>();
+            for(User user : users) {
+                members.add(new UserTeamResponseDto(user.getId(), user.getUsername(), user.getName(), user.getEmail(), user.getRole(), user.getCreatedAt()));
+            }
             dtos.add(new TeamReadResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members));
         }
 
@@ -57,7 +66,11 @@ public class TeamService {
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
-        List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
+        List<User> users = teamMemberRepository.findUserByTeamId(team.getId());
+        List<UserTeamResponseDto> members = new ArrayList<>();
+        for(User user : users) {
+            members.add(new UserTeamResponseDto(user.getId(), user.getUsername(), user.getName(), user.getEmail(), user.getRole(), user.getCreatedAt()));
+        }
 
         return new TeamReadResponseDto(team.getId(), team.getName(), team.getDescription(), team.getCreatedAt(), members);
     }
@@ -67,7 +80,11 @@ public class TeamService {
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
-        List<User> members = teamMemberRepository.findUserIdByTeamId(team.getId());
+        List<User> users = teamMemberRepository.findUserByTeamId(team.getId());
+        List<UserTeamResponseDto> members = new ArrayList<>();
+        for(User user : users) {
+            members.add(new UserTeamResponseDto(user.getId(), user.getUsername(), user.getName(), user.getEmail(), user.getRole(), user.getCreatedAt()));
+        }
 
         if (request.getName() != null) {
             team.updateName(request.getName());

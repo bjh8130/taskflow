@@ -10,9 +10,10 @@ import java.util.List;
 
 public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
-    @Query("SELECT t.user.id FROM TeamMember t WHERE t.team.id = :teamId")
-    List<User> findUserIdByTeamId(@Param("teamId") Long teamId);
+    @Query("SELECT t.user FROM TeamMember t WHERE t.team.id = :teamId")
+    List<User> findUserByTeamId(@Param("teamId") Long teamId);
 
     boolean existsByTeamId(Long teamId);
 
+    boolean existsByTeamIdAndUserId(Long teamId, Long userId);
 }

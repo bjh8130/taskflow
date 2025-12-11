@@ -11,6 +11,8 @@ public enum ErrorCode {
     USERNAME_ALREADY_EXISTS(409, "이미 존재하는 사용자 아이디입니다."),
     TEAMNAME_ALREADY_EXISTS(409, "이미 존재하는 팀 이름입니다."),
     TEAM_NOT_EMPTY(409, "팀에 멤버가 존재하여 삭제할 수 없습니다."),
+    TEAM_MEMBER_ALREADY_EXISTS(409, "이미 팀에 속한 멤버입니다"),
+
     //------404-----------------------
     TASK_NOT_FOUND(404, "존재하지 않는 작업입니다."),
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
@@ -33,6 +35,7 @@ public enum ErrorCode {
     PARENT_COMMENT_REQUIRED(400, "대댓글 생성 시 부모 댓글 ID는 필수입니다."),
     COMMENT_DEPTH_EXCEEDED(400, "대댓글에 대댓글은 달 수 없습니다."),
     INVALID_ARGUMENT_STATUS(400, "유효하지 않은 상태값입니다.."),
+    INVALID_ARGUMENT_QUERY(400, "검색어를 입력해 주세요")
     ;
     private final int status;
     private final String message;
