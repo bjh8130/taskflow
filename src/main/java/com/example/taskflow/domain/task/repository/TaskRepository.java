@@ -4,6 +4,7 @@ import com.example.taskflow.domain.task.entity.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,4 +24,12 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     List<Task> findAllByUserIdAndIsDeletedFalseAndDueDateGreaterThanEqual(Long userId, LocalDateTime end);
 
     List<Task> findAllByUserIdAndIsDeletedFalseAndDueDateLessThanAndStatusNot(long userId, LocalDateTime start, String status);
+
+    @Query("""
+    SELECT t FROM Task t
+    WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%'))
+       OR LOWER(t.description) LIKE LOWER(CONCAT('%', :query, '%'))
+    """)
+    List<Task> searchTasks(String query);
 }
+
