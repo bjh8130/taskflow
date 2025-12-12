@@ -118,7 +118,7 @@ public class ActivityLogService {
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        ActivityLog activityLog = new ActivityLog(type, user, dto.getId(), description);
+        ActivityLog activityLog = new ActivityLog(type, user, dto.getTaskId(), description);
 
         activityLogRepository.save(activityLog);
     }
@@ -130,7 +130,7 @@ public class ActivityLogService {
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        ActivityLog activityLog = new ActivityLog(type, user, dto.getId(), description);
+        ActivityLog activityLog = new ActivityLog(type, user, dto.getTaskId(), description);
 
         activityLogRepository.save(activityLog);
     }
@@ -140,7 +140,7 @@ public class ActivityLogService {
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        ActivityLog activityLog = new ActivityLog(type, user, comment.getId(), description);
+        ActivityLog activityLog = new ActivityLog(type, user, comment.getTask().getId(), description);
 
         activityLogRepository.save(activityLog);
     }
