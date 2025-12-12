@@ -79,8 +79,11 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<GlobalResponse<Void>> deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
+    public ResponseEntity<GlobalResponse<Void>> deleteTask(
+            @PathVariable Long id,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        taskService.deleteTask(id, principalDetails.getUser().getId());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "작업이 삭제되었습니다.", null));

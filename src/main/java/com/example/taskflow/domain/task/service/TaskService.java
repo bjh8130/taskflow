@@ -79,7 +79,6 @@ public class TaskService {
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
         User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        //TODO 인증인가 구현 후 수정 권한 예외처리 예정
 
         task.update(
                 request.getTitle(),
@@ -93,8 +92,7 @@ public class TaskService {
 
     @Transactional
     @ActivityLog(type = ActivityTypes.TASK_DELETED)
-    public void deleteTask(Long taskId) {
-        Long userId= 1L;
+    public void deleteTask(Long taskId, Long userId) {
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
@@ -122,3 +120,4 @@ public class TaskService {
         return TaskResponseDto.from(task, false);
     }
 }
+
