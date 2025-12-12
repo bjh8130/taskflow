@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.comment.controller;
 
+import com.example.taskflow.common.auth.security.PrincipalDetails;
 import com.example.taskflow.common.response.CustomPageResponse;
 import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.comment.dto.request.CommentCreateRequestDto;
@@ -12,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,35 +24,32 @@ public class CommentController {
     private final CommentService commentService;
 
     /**
-     * 댓글 생성
+     * 댓글/대댓글 생성
      * POST /api/tasks/{taskId}/comments
+     * - parentId가 없으면 최상위 댓글 생성
+     * - parentId가 있으면 대댓글 생성
      */
     @PostMapping
     public ResponseEntity<GlobalResponse<CommentResponseDto>> createComment(
             @PathVariable Long taskId,
             @Valid @RequestBody CommentCreateRequestDto request,
-            @RequestHeader("userId") Long userId) {
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-        CommentResponseDto result = commentService.createComment(request, taskId, userId);
+        Long userId = principalDetails.getUser().getId();
+
+        // parentId 유무로 댓글/대댓글 자동 판단
+        CommentResponseDto result;
+        if (request.getParentId() == null) {
+            // 최상위 댓글
+            result = commentService.createComment(request, taskId, userId);
+        } else {
+            // 대댓글
+            result = commentService.createReply(request, taskId, userId);
+        }
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(GlobalResponse.success(true, "댓글 생성 성공", result));
-    }
-
-    /**
-     * 대댓글 생성
-     * POST /api/tasks/{taskId}/comments/reply
-     */
-    @PostMapping("/reply")
-    public ResponseEntity<GlobalResponse<CommentResponseDto>> createReply(
-            @PathVariable Long taskId,
-            @Valid @RequestBody CommentCreateRequestDto request,
-            @RequestHeader("userId") Long userId) {
-
-        CommentResponseDto result = commentService.createReply(request, taskId, userId);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(GlobalResponse.success(true, "대댓글 생성 성공", result));
     }
 
     /**
@@ -80,8 +79,9 @@ public class CommentController {
             @PathVariable long taskId,
             @PathVariable long commentId,
             @RequestBody CommentUpdateRequestDto request,
-            @RequestHeader("userId") Long userId) {
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
+        Long userId = principalDetails.getUser().getId();
         CommentUpdateResponseDto result = commentService.updateComment(taskId, commentId, request, userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -96,8 +96,9 @@ public class CommentController {
     public ResponseEntity<GlobalResponse<Void>> deleteComment(
             @PathVariable long taskId,
             @PathVariable long commentId,
-            @RequestHeader("userId") Long userId) {
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
+        Long userId = principalDetails.getUser().getId();
         commentService.deleteComment(commentId, userId);
 
         return ResponseEntity
