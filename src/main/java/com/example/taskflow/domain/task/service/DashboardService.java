@@ -17,12 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -98,6 +94,8 @@ public class DashboardService {
         LocalDate today = LocalDate.now();
 
         /**
+         * 12.11 구현 - 성주연
+         * 12.12 리팩토링 - 성주연
          * 이월 방식 작업 주간 추세
          * - tasks: 전날 미완료 + 오늘 생성
          * - completed: 오늘 완료한 작업
@@ -142,9 +140,7 @@ public class DashboardService {
             previousIncomplete = incomplete;
         }
 
-        // 오늘부터 역순으로 정렬 (오늘 → 7일 전)
-        Collections.reverse(result);
-
+        // 7일 전부터 오늘까지 시간 순서대로 반환 (과거 → 현재)
         return result;
     }
 
