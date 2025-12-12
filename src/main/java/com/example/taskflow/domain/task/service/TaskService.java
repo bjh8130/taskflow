@@ -32,9 +32,8 @@ public class TaskService {
 
     @Transactional
     @ActivityLog(type = ActivityTypes.TASK_CREATED)
-    public TaskResponseDto createTask(TaskCreateRequestDto request) {
-        Long userId= 1L;
-        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+    public TaskResponseDto createTask(TaskCreateRequestDto request, Long userId) {
+        User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Task task = new Task(
                 request.getTitle(),
@@ -43,7 +42,7 @@ public class TaskService {
                 request.getPriority() != null
                         ? request.getPriority()
                         : TaskPriority.MEDIUM.name(),
-                user,
+                assignee,
                 request.getDueDate() != null
                         ? request.getDueDate()
                         :LocalDateTime.now().plusDays(7)
@@ -53,7 +52,7 @@ public class TaskService {
     }
 
     @Transactional(readOnly=true)
-    public TaskResponseDto getTaskById(Long taskId) {
+    public TaskResponseDto getTaskById(Long taskId, Long userId) {
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
         return TaskResponseDto.from(task, true);
@@ -78,12 +77,14 @@ public class TaskService {
     public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request) {
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
-        //TODO 인증인가 구현 후 수정 권한 예외처리 예정
+        User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         task.update(
                 request.getTitle(),
                 request.getDescription(),
                 request.getPriority(),
+                assignee,
                 request.getDueDate()
         );
         return TaskResponseDto.from(task, false);
@@ -91,8 +92,7 @@ public class TaskService {
 
     @Transactional
     @ActivityLog(type = ActivityTypes.TASK_DELETED)
-    public void deleteTask(Long taskId) {
-        Long userId= 1L;
+    public void deleteTask(Long taskId, Long userId) {
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
@@ -120,3 +120,4 @@ public class TaskService {
         return TaskResponseDto.from(task, false);
     }
 }
+
