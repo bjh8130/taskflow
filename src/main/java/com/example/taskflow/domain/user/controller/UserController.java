@@ -3,10 +3,8 @@ package com.example.taskflow.domain.user.controller;
 import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.user.dto.request.UserCreateRequestDto;
 import com.example.taskflow.domain.user.dto.request.UserUpdateRequestDto;
-import com.example.taskflow.domain.user.dto.response.UserCreateResponseDto;
-import com.example.taskflow.domain.user.dto.response.UserGetAllResponseDto;
-import com.example.taskflow.domain.user.dto.response.UserGetResponseDto;
-import com.example.taskflow.domain.user.dto.response.UserUpdateResponseDto;
+import com.example.taskflow.domain.user.dto.request.UserVerifyRequestDto;
+import com.example.taskflow.domain.user.dto.response.*;
 import com.example.taskflow.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -80,5 +78,17 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "추가 가능한 사용자 조회가 완료되었습니다.", result));
+    }
+
+    // 비밀번호 확인
+    // TODO: Path Parameter - JWT 토큰에서 추출한 ID로 수정
+    @PostMapping("/verify-password/{userId}")
+    public ResponseEntity<GlobalResponse<UserVerifyResponseDto>> verifyPassword(
+            @PathVariable long userId,
+            @Valid @RequestBody UserVerifyRequestDto request) {
+        UserVerifyResponseDto result = userService.verifyPassword(userId, request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(GlobalResponse.success(true, "비밀번호가 확인되었습니다.", result));
     }
 }
