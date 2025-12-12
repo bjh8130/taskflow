@@ -1,8 +1,10 @@
 package com.example.taskflow.domain.comment.service;
 
+import com.example.taskflow.common.annotation.ActivityLog;
 import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.common.response.CustomPageResponse;
+import com.example.taskflow.domain.activityLog.enums.ActivityTypes;
 import com.example.taskflow.domain.comment.dto.request.CommentCreateRequestDto;
 import com.example.taskflow.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.example.taskflow.domain.comment.dto.response.CommentGetResponseDto;
@@ -35,6 +37,7 @@ public class CommentService {
      * 댓글 생성 (최상위 댓글)
      */
     @Transactional
+    @ActivityLog(type = ActivityTypes.COMMENT_CREATED)
     public CommentResponseDto createComment(CommentCreateRequestDto request, Long taskId, Long userId) {
         // User와 Task 조회
         User user = userRepository.findById(userId)
@@ -64,6 +67,7 @@ public class CommentService {
      * 대댓글 생성 (답글)
      */
     @Transactional
+    @ActivityLog(type = ActivityTypes.COMMENT_CREATED)
     public CommentResponseDto createReply(CommentCreateRequestDto request, Long taskId, Long userId) {
         // 부모 댓글 확인
         if (request.getParentId() == null) {
@@ -128,6 +132,7 @@ public class CommentService {
      * 댓글 수정
      */
     @Transactional
+    @ActivityLog(type = ActivityTypes.COMMENT_UPDATED)
     public CommentUpdateResponseDto updateComment(long taskId, long commentId, CommentUpdateRequestDto request, Long userId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
@@ -148,6 +153,7 @@ public class CommentService {
      * 댓글 삭제
      */
     @Transactional
+    @ActivityLog(type = ActivityTypes.COMMENT_DELETED)
     public void deleteComment(long commentId, Long userId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
