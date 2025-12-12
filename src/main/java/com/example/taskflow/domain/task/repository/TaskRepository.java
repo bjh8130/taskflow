@@ -10,6 +10,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Task 엔티티에 대한 데이터베이스 접근을 담당하는 Repository입니다.
+ * 기본 CRUD 외에도 상태, 조건 기반 조회 등 Task 검색을 위한 메서드를 제공합니다.
+ */
 public interface TaskRepository extends JpaRepository<Task,Long> {
     Page<Task> findAllByIsDeletedFalse(Pageable pageable);
     Page<Task> findAllByStatusAndIsDeletedFalse(String status, Pageable pageable);
@@ -31,5 +35,12 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
        OR LOWER(t.description) LIKE LOWER(CONCAT('%', :query, '%'))
     """)
     List<Task> searchTasks(String query);
-}
 
+    List<Task> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    List<Task> findByDueDateBetweenAndIsDeletedFalse(LocalDateTime start, LocalDateTime end);
+
+    List<Task> findByCreatedAtLessThanEqualAndIsDeletedFalse(LocalDateTime date);
+
+    List<Task> findByCompletedDateBetweenAndIsDeletedFalse(LocalDateTime start, LocalDateTime end);
+}

@@ -5,12 +5,11 @@ import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.domain.user.dto.request.UserCreateRequestDto;
 import com.example.taskflow.domain.user.dto.request.UserUpdateRequestDto;
-import com.example.taskflow.domain.user.dto.response.UserCreateResponseDto;
-import com.example.taskflow.domain.user.dto.response.UserGetAllResponseDto;
-import com.example.taskflow.domain.user.dto.response.UserGetResponseDto;
-import com.example.taskflow.domain.user.dto.response.UserUpdateResponseDto;
+import com.example.taskflow.domain.user.dto.request.UserVerifyRequestDto;
+import com.example.taskflow.domain.user.dto.response.*;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,5 +95,29 @@ public class UserService {
         );
 
         user.softDelete();
+    }
+
+    // 추가 가능한 사용자 조회
+    @Transactional(readOnly = true)
+    public List<UserGetAllResponseDto> getAvailableUsers(Long teamId) {
+
+        return userRepository.findAllAvailableUsers(teamId).stream().map(UserGetAllResponseDto::from).toList();
+    }
+
+    // 비밀번호 확인
+    @Transactional
+    public UserVerifyResponseDto verifyPassword(long userId, UserVerifyRequestDto request) {
+
+        User user = userRepository.findByIdAndIsDeletedFalse(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        boolean valid = passwordEncoder.matches(request.getPassword(), user.getPassword());
+
+        if (!valid) {
+            throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
+        }
+
+        return new UserVerifyResponseDto(true);
     }
 }

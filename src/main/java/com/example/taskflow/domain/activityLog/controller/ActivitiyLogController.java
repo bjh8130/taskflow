@@ -26,7 +26,7 @@ public class ActivitiyLogController {
     ) {
         CustomPageResponse<ActivityLogResponseDto> result = activityLogService.findLogPage(page, size);
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "활동 로그 조회 성공", result));
     }
 }
