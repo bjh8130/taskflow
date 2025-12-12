@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.user.controller;
 
+import com.example.taskflow.common.auth.security.PrincipalDetails;
 import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.user.dto.request.UserCreateRequestDto;
 import com.example.taskflow.domain.user.dto.request.UserUpdateRequestDto;
@@ -8,8 +9,11 @@ import com.example.taskflow.domain.user.dto.response.*;
 import com.example.taskflow.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -81,11 +85,11 @@ public class UserController {
     }
 
     // 비밀번호 확인
-    // TODO: Path Parameter - JWT 토큰에서 추출한 ID로 수정
-    @PostMapping("/verify-password/{userId}")
+    @PostMapping("/verify-password")
     public ResponseEntity<GlobalResponse<UserVerifyResponseDto>> verifyPassword(
-            @PathVariable long userId,
-            @Valid @RequestBody UserVerifyRequestDto request) {
+            @Valid @RequestBody UserVerifyRequestDto request,
+            @AuthenticationPrincipal PrincipalDetails principal) {
+        long userId = principal.getUser().getId();
         UserVerifyResponseDto result = userService.verifyPassword(userId, request);
         return ResponseEntity
                 .status(HttpStatus.OK)
