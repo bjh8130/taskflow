@@ -29,9 +29,8 @@ public class TaskService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TaskResponseDto createTask(TaskCreateRequestDto request) {
-        Long userId= 1L;
-        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+    public TaskResponseDto createTask(TaskCreateRequestDto request, Long userId) {
+        User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Task task = new Task(
                 request.getTitle(),
@@ -40,7 +39,7 @@ public class TaskService {
                 request.getPriority() != null
                         ? request.getPriority()
                         : TaskPriority.MEDIUM.name(),
-                user,
+                assignee,
                 request.getDueDate() != null
                         ? request.getDueDate()
                         :LocalDateTime.now().plusDays(7)
@@ -49,14 +48,14 @@ public class TaskService {
         return TaskResponseDto.from(savedTask, false);
     }
     @Transactional(readOnly=true)
-    public TaskResponseDto getTaskById(Long taskId) {
+    public TaskResponseDto getTaskById(Long taskId, Long userId) {
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
         return TaskResponseDto.from(task, true);
     }
 
     @Transactional(readOnly=true)
-    public Page<TaskResponseDto> getAllTask(Pageable pageable, String status) {
+    public Page<TaskResponseDto> getAllTask(Pageable pageable, String status, Long userId) {
         Page<Task> tasks;
         if(status == null) {
             tasks = taskRepository.findAllByIsDeletedFalse(pageable);
@@ -70,7 +69,7 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request) {
+    public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request, Long userId) {
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
         //TODO 인증인가 구현 후 수정 권한 예외처리 예정

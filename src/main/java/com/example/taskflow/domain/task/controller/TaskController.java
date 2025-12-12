@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.task.controller;
 
+import com.example.taskflow.common.auth.security.PrincipalDetails;
 import com.example.taskflow.common.response.CustomPageResponse;
 import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.task.dto.request.*;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -26,9 +28,12 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<TaskResponseDto>> createTask(@Valid @RequestBody TaskCreateRequestDto request) {
+    public ResponseEntity<GlobalResponse<TaskResponseDto>> createTask(
+            @Valid @RequestBody TaskCreateRequestDto request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
 
-        TaskResponseDto result = taskService.createTask(request);
+        TaskResponseDto result = taskService.createTask(request, principalDetails.getUser().getId());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(GlobalResponse.success(true, "Task 생성 성공", result));
@@ -36,8 +41,11 @@ public class TaskController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<GlobalResponse<TaskResponseDto>> getOneTask(@PathVariable Long id) {
-        TaskResponseDto result = taskService.getTaskById(id);
+    public ResponseEntity<GlobalResponse<TaskResponseDto>> getOneTask(
+            @PathVariable Long id,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        TaskResponseDto result = taskService.getTaskById(id, principalDetails.getUser().getId());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "작업 조회 성공", result));
@@ -47,9 +55,10 @@ public class TaskController {
     public ResponseEntity<GlobalResponse<CustomPageResponse<TaskResponseDto>>> getAllTasks(
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.ASC)
             Pageable pageable,
-            @RequestParam(required = false) String status
+            @RequestParam(required = false) String status,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        Page<TaskResponseDto> result = taskService.getAllTask(pageable, status);
+        Page<TaskResponseDto> result = taskService.getAllTask(pageable, status, principalDetails.getUser().getId());
         CustomPageResponse<TaskResponseDto> pagingResult = CustomPageResponse.from(result);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -59,9 +68,10 @@ public class TaskController {
     @PutMapping("/{id}")
     public ResponseEntity<GlobalResponse<TaskResponseDto>> updateTask(
             @PathVariable Long id,
-            @RequestBody TaskUpdateRequestDto request
+            @RequestBody TaskUpdateRequestDto request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
         ) {
-        TaskResponseDto result = taskService.updateTask(id, request);
+        TaskResponseDto result = taskService.updateTask(id, request, principalDetails.getUser().getId());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "작업이 수정되었습니다.", result));

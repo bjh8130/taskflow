@@ -15,6 +15,7 @@ public class TaskCreateRequestDto {
     private String description;
     private String status;
     private String priority;
+    private Long assigneeId;
     private LocalDateTime dueDate;
 
 
