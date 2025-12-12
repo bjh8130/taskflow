@@ -34,8 +34,7 @@ public class UserController {
                 .body(GlobalResponse.success(true, "회원가입이 완료되었습니다.", result));
     }
 
-    // 사용자 정보 조회 (JWT 전까지는 다른 사용자 조회 가능)
-    // TODO: Path Parameter - JWT 토큰에서 추출한 ID로 수정
+    // 사용자 정보 조회
     @GetMapping("/{userId}")
     public ResponseEntity<GlobalResponse<UserGetResponseDto>> getUser(@PathVariable long userId) {
         UserGetResponseDto result = userService.getUser(userId);
@@ -53,7 +52,7 @@ public class UserController {
                 .body(GlobalResponse.success(true, "사용자 목록 조회가 완료되었습니다.", result));
     }
 
-    // 사용자 정보 수정 (JWT 전까지는 다른 사용자 수정 가능)
+    // 사용자 정보 수정
     @PutMapping("/{userId}")
     public ResponseEntity<GlobalResponse<UserUpdateResponseDto>> updateUser(
         @PathVariable long userId, 
