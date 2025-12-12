@@ -9,25 +9,25 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-public class ActivityLogResponseDto {
+public class ActivityLogGetOneResponseDto {
 
     private final Long id;
-    private final String type;
     private final Long userId;
     private final UserActivityLogResponseDto user;
-    private final Long taskId;
-    private final LocalDateTime timestamp;
+    private final String action;
+    private final Long targetId;
     private final String description;
+    private final LocalDateTime createdAt;
 
-    public static ActivityLogResponseDto from(ActivityLog log, UserActivityLogResponseDto user) {
-        return new ActivityLogResponseDto(
+    public static ActivityLogGetOneResponseDto from(ActivityLog log, UserActivityLogResponseDto user) {
+        return new ActivityLogGetOneResponseDto(
                 log.getId(),
-                log.getType(),
                 log.getUser().getId(),
                 user,
+                log.getType(),
                 log.getTaskId(),
-                log.getCreatedAt(),
-                log.getDescription()
+                log.getDescription(),
+                log.getCreatedAt()
         );
     }
 }
