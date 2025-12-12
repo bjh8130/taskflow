@@ -27,6 +27,10 @@ public interface UserRepository extends JpaRepository<User,Long> {
     """)
     List<User> searchUsers(String query);
 
+    List<User> findByName(String name);
+
+    Optional<User> findByUsername(String username);
+
     @Query("""
     SELECT u FROM User u
     WHERE u.isDeleted = false

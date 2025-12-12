@@ -34,7 +34,7 @@ public class TaskController {
                 .body(GlobalResponse.success(true, "Task 생성 성공", result));
 
     }
-
+    
     @GetMapping("/{id}")
     public ResponseEntity<GlobalResponse<TaskResponseDto>> getOneTask(@PathVariable Long id) {
         TaskResponseDto result = taskService.getTaskById(id);

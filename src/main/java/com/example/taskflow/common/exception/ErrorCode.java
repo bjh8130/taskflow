@@ -28,6 +28,7 @@ public enum ErrorCode {
     COMMENT_DELETE_FORBIDDEN(403, "댓글을 삭제할 권한이 없습니다."),
     //------401-----------------------
     LOGIN_REQUIRED(401, "로그인한 유저만 사용할 수 있는 기능입니다"),
+    LOGIN_UNAUTHORIZED(401, "아이디 또는 비밀번호가 올바르지 않습니다."),
     //------400-----------------------
     INVALID_EMAIL_FORMAT(400, "이메일 형식이 올바르지 않습니다."),
     INVALID_PASSWORD_FORMAT(400, "비밀번호 형식이 올바르지 않습니다."),
