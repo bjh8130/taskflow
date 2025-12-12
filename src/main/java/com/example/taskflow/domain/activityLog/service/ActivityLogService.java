@@ -2,6 +2,7 @@ package com.example.taskflow.domain.activityLog.service;
 
 import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
+import com.example.taskflow.common.response.CustomPageResponse;
 import com.example.taskflow.domain.activityLog.dto.response.ActivityLogResponseDto;
 import com.example.taskflow.domain.activityLog.entity.ActivityLog;
 import com.example.taskflow.domain.activityLog.repository.ActivityLogRepository;
@@ -14,10 +15,11 @@ import com.example.taskflow.domain.user.dto.response.UserActivityLogResponseDto;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,27 +28,22 @@ public class ActivityLogService {
     private final ActivityLogRepository activityLogRepository;
     private final UserRepository userRepository;
 
-    public List<ActivityLogResponseDto> findLogAll() {
-        List<ActivityLog> logs = activityLogRepository.findAll();
-        List<ActivityLogResponseDto> results = new ArrayList<>();
+    public CustomPageResponse<ActivityLogResponseDto> findLogPage(int page, int size) {
 
-        for (ActivityLog log : logs) {
-            results.add(new ActivityLogResponseDto(
-                            log.getId(),
-                            log.getType(),
-                            log.getUser().getId(),
-                            new UserActivityLogResponseDto(
-                                    log.getUser().getId(),
-                                    log.getUser().getUsername(),
-                                    log.getUser().getName()),
-                            log.getTaskId(),
-                            log.getCreatedAt(),
-                            log.getDescription()
-                    )
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<ActivityLog> logs = activityLogRepository.findAll(pageable);
+
+        Page<ActivityLogResponseDto> result = logs.map(log -> {
+            UserActivityLogResponseDto user = new UserActivityLogResponseDto(
+                    log.getUser().getId(),
+                    log.getUser().getUsername(),
+                    log.getUser().getName()
             );
-        }
+            return ActivityLogResponseDto.from(log, user);
+        });
 
-        return results;
+        return CustomPageResponse.from(result);
     }
 
     public void createTaskLog(String type, String description, Object result) {

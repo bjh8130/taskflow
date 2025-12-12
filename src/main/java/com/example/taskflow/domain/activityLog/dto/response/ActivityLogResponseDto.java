@@ -1,11 +1,14 @@
 package com.example.taskflow.domain.activityLog.dto.response;
 
+import com.example.taskflow.domain.activityLog.entity.ActivityLog;
 import com.example.taskflow.domain.user.dto.response.UserActivityLogResponseDto;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 public class ActivityLogResponseDto {
 
     private final Long id;
@@ -16,20 +19,15 @@ public class ActivityLogResponseDto {
     private final LocalDateTime timestamp;
     private final String description;
 
-    public ActivityLogResponseDto(
-            Long id,
-            String type,
-            Long userId,
-            UserActivityLogResponseDto user,
-            Long taskId,
-            LocalDateTime timestamp,
-            String description) {
-        this.id = id;
-        this.type = type;
-        this.userId = userId;
-        this.user = user;
-        this.taskId = taskId;
-        this.timestamp = timestamp;
-        this.description = description;
+    public static ActivityLogResponseDto from(ActivityLog log, UserActivityLogResponseDto user) {
+        return new ActivityLogResponseDto(
+                log.getId(),
+                log.getType(),
+                log.getUser().getId(),
+                user,
+                log.getTaskId(),
+                log.getCreatedAt(),
+                log.getDescription()
+        );
     }
 }
