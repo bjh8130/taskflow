@@ -25,7 +25,7 @@ public class LoginService {
         boolean matchPassword = passwordEncoder.matches(requestDto.getPassword(), user.getPassword());
 
         if(!matchPassword) {
-            new CustomException(ErrorCode.LOGIN_UNAUTHORIZED);
+           throw new CustomException(ErrorCode.LOGIN_UNAUTHORIZED);
         }
         String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
        return new LoginResponseDto(token);
