@@ -13,6 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Task 리소스에 대한 생성, 조회, 수정, 삭제 및 상태 변경 API를 제공하는 REST 컨트롤러입니다.
+ * 비즈니스 로직은 TaskService에 위임하며, 모든 응답은 GlobalResponse 포맷으로 반환합니다.
+ * 작업 단건·목록 조회, 페이징, 상태 변경 등 Task 관리 기능의 진입점을 담당합니다.
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/tasks")

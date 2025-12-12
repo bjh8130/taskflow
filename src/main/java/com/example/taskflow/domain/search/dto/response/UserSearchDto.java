@@ -1,4 +1,4 @@
-package com.example.taskflow.search.dto.response;
+package com.example.taskflow.domain.search.dto.response;
 
 import com.example.taskflow.domain.user.entity.User;
 import lombok.*;

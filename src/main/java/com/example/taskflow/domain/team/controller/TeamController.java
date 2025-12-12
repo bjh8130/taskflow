@@ -22,6 +22,9 @@ public class TeamController {
 
     private final TeamService teamService;
 
+    /**
+     * 팀 생성 API
+     */
     @PostMapping
     public ResponseEntity<GlobalResponse<TeamCreateResponseDto>> createTeam(@Valid @RequestBody TeamCreateRequestDto request) {
         TeamCreateResponseDto result = teamService.save(request);
@@ -30,6 +33,9 @@ public class TeamController {
                 .body(GlobalResponse.success(true, "팀이 생성되었습니다.", result));
     }
 
+    /**
+     * 팀 목록 조회 API
+     */
     @GetMapping
     public ResponseEntity<GlobalResponse<List<TeamReadResponseDto>>> readTeamAll() {
         List<TeamReadResponseDto> result = teamService.findAll();
@@ -38,6 +44,9 @@ public class TeamController {
                 .body(GlobalResponse.success(true, "팀 목록 조회 성공", result));
     }
 
+    /**
+     * 팀 상세 조회 API
+     */
     @GetMapping("/{id}")
     public ResponseEntity<GlobalResponse<TeamReadResponseDto>> readTeamOne(@PathVariable Long id) {
         TeamReadResponseDto result = teamService.findOne(id);
@@ -46,6 +55,9 @@ public class TeamController {
                 .body(GlobalResponse.success(true, "팀 조회 성공", result));
     }
 
+    /**
+     * 팀 수정 API
+     */
     @PutMapping("/{id}")
     public ResponseEntity<GlobalResponse<TeamUpdateResponseDto>> updateTeam(
             @PathVariable Long id,
@@ -56,6 +68,9 @@ public class TeamController {
                 .body(GlobalResponse.success(true, "팀 정보가 수정되었습니다.", result));
     }
 
+    /**
+     * 팀 삭제 API
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<GlobalResponse<Void>> deleteTeam(@PathVariable Long id) {
         teamService.delete(id);

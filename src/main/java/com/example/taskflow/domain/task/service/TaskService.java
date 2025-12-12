@@ -17,6 +17,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+/**
+ * Task 도메인의 비즈니스 로직을 처리하는 서비스 클래스입니다.
+ * 작업 생성, 조회, 수정, 삭제, 상태 변경을 수행하며 관련 검증 및 트랜잭션을 관리합니다.
+ * Repository와 연동하여 도메인 상태를 변경하고 Controller 요청을 처리합니다.
+ */
 @Service
 @RequiredArgsConstructor
 public class TaskService {
