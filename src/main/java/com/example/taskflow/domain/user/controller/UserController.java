@@ -54,7 +54,6 @@ public class UserController {
     }
 
     // 사용자 정보 수정 (JWT 전까지는 다른 사용자 수정 가능)
-    // TODO: Path Parameter - JWT 토큰에서 추출한 ID로 수정
     @PutMapping("/{userId}")
     public ResponseEntity<GlobalResponse<UserUpdateResponseDto>> updateUser(
         @PathVariable long userId, 
@@ -66,7 +65,6 @@ public class UserController {
     }
 
     // 회원 탈퇴
-    // TODO: Path Parameter - JWT 토큰에서 추출한 ID로 수정
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable long userId) {
         userService.deleteUser(userId);
