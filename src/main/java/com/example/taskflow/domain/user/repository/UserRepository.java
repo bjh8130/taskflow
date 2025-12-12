@@ -34,8 +34,11 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Query("""
     SELECT u FROM User u
     WHERE u.isDeleted = false
-    AND u.id NOT IN (
-        SELECT tm.user.id FROM TeamMember tm WHERE tm.team.id = :teamId)
+      AND NOT EXISTS (
+          SELECT tm.id
+          FROM TeamMember tm
+          WHERE tm.user = u
+      )
     """)
     List<User> findAllAvailableUsers(@Param("teamId") Long teamId);
 }
