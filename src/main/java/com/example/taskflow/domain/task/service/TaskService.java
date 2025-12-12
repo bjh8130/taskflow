@@ -1,6 +1,8 @@
 package com.example.taskflow.domain.task.service;
 
+import com.example.taskflow.common.annotation.ActivityLog;
 import com.example.taskflow.common.exception.*;
+import com.example.taskflow.domain.activityLog.enums.ActivityTypes;
 import com.example.taskflow.domain.task.dto.request.*;
 import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
 import com.example.taskflow.domain.task.entity.Task;
@@ -29,6 +31,7 @@ public class TaskService {
     private final UserRepository userRepository;
 
     @Transactional
+    @ActivityLog(type = ActivityTypes.TASK_CREATED)
     public TaskResponseDto createTask(TaskCreateRequestDto request, Long userId) {
         User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -47,6 +50,7 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
         return TaskResponseDto.from(savedTask, false);
     }
+
     @Transactional(readOnly=true)
     public TaskResponseDto getTaskById(Long taskId, Long userId) {
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
@@ -69,6 +73,7 @@ public class TaskService {
     }
 
     @Transactional
+    @ActivityLog(type = ActivityTypes.TASK_UPDATED)
     public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request) {
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
@@ -87,6 +92,7 @@ public class TaskService {
     }
 
     @Transactional
+    @ActivityLog(type = ActivityTypes.TASK_DELETED)
     public void deleteTask(Long taskId) {
         Long userId= 1L;
         User user = userRepository.findByIdAndIsDeletedFalse(userId)
@@ -105,6 +111,7 @@ public class TaskService {
     }
 
     @Transactional
+    @ActivityLog(type = ActivityTypes.TASK_STATUS_CHANGED)
     public TaskResponseDto updateTaskStatus(Long taskId, TaskStatusRequestDto request) {
         if(!TaskStatus.isValid(request.getStatus())) {
             throw new CustomException(ErrorCode.INVALID_ARGUMENT_STATUS);

@@ -18,6 +18,5 @@ public class TaskCreateRequestDto {
     private Long assigneeId;
     private LocalDateTime dueDate;
 
-
 }
 
