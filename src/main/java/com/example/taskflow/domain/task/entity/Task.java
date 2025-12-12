@@ -61,10 +61,11 @@ public class Task extends BaseEntity {
     }
 
 
-    public void update(String title, String description, String priority, LocalDateTime dueDate) {
+    public void update(String title, String description, String priority, User user, LocalDateTime dueDate) {
         this.title = title;
         this.description = description;
         this.priority = priority;
+        this.user = user;
         this.dueDate = dueDate;
     }
 

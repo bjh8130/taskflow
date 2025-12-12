@@ -55,7 +55,7 @@ public class TaskService {
     }
 
     @Transactional(readOnly=true)
-    public Page<TaskResponseDto> getAllTask(Pageable pageable, String status, Long userId) {
+    public Page<TaskResponseDto> getAllTask(Pageable pageable, String status) {
         Page<Task> tasks;
         if(status == null) {
             tasks = taskRepository.findAllByIsDeletedFalse(pageable);
@@ -69,15 +69,18 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request, Long userId) {
+    public TaskResponseDto updateTask(Long taskId, TaskUpdateRequestDto request) {
         Task task = taskRepository.findByIdAndIsDeletedFalse(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+        User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         //TODO 인증인가 구현 후 수정 권한 예외처리 예정
 
         task.update(
                 request.getTitle(),
                 request.getDescription(),
                 request.getPriority(),
+                assignee,
                 request.getDueDate()
         );
         return TaskResponseDto.from(task, false);

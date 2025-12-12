@@ -58,7 +58,7 @@ public class TaskController {
             @RequestParam(required = false) String status,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        Page<TaskResponseDto> result = taskService.getAllTask(pageable, status, principalDetails.getUser().getId());
+        Page<TaskResponseDto> result = taskService.getAllTask(pageable, status);
         CustomPageResponse<TaskResponseDto> pagingResult = CustomPageResponse.from(result);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -71,7 +71,7 @@ public class TaskController {
             @RequestBody TaskUpdateRequestDto request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
         ) {
-        TaskResponseDto result = taskService.updateTask(id, request, principalDetails.getUser().getId());
+        TaskResponseDto result = taskService.updateTask(id, request);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "작업이 수정되었습니다.", result));
