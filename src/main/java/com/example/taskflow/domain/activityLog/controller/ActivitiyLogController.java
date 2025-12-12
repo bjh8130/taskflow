@@ -23,7 +23,7 @@ public class ActivitiyLogController {
     public ResponseEntity<GlobalResponse<List<ActivityLogResponseDto>>> readLogAll() {
         List<ActivityLogResponseDto> result = activityLogService.findLogAll();
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "활동 로그 조회 성공", result));
     }
 }
