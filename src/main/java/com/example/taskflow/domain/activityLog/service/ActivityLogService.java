@@ -88,58 +88,58 @@ public class ActivityLogService {
         return result;
     }
 
-    public void createTaskLog(Long userId, LogTypes type, Object result) {
+    public void createTaskLog(Long userId, LogTypes type, String description, Object result) {
 
         TaskResponseDto dto = (TaskResponseDto) result;
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        ActivityLog activityLog = new ActivityLog(type, user, dto.getId(), type.description);
+        ActivityLog activityLog = new ActivityLog(type, user, dto.getId(), description);
 
         activityLogRepository.save(activityLog);
     }
 
-    public void createTaskDeleteLog(Long userId, LogTypes type, Long taskId) {
+    public void createTaskDeleteLog(Long userId, LogTypes type, String description, Long taskId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        ActivityLog activityLog = new ActivityLog(type, user, taskId, type.description);
+        ActivityLog activityLog = new ActivityLog(type, user, taskId, description);
 
         activityLogRepository.save(activityLog);
     }
 
-    public void createCommentLog(Long userId, LogTypes type, Object result) {
+    public void createCommentCreateLog(Long userId, LogTypes type, String description, Object result) {
 
         CommentResponseDto dto = (CommentResponseDto) result;
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        ActivityLog activityLog = new ActivityLog(type, user, dto.getTaskId(), type.description);
+        ActivityLog activityLog = new ActivityLog(type, user, dto.getTaskId(), description);
 
         activityLogRepository.save(activityLog);
     }
 
-    public void createCommentUpdateLog(Long userId, LogTypes type, Object result) {
+    public void createCommentUpdateLog(Long userId, LogTypes type, String description, Object result) {
 
         CommentUpdateResponseDto dto = (CommentUpdateResponseDto) result;
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        ActivityLog activityLog = new ActivityLog(type, user, dto.getTaskId(), type.description);
+        ActivityLog activityLog = new ActivityLog(type, user, dto.getTaskId(), description);
 
         activityLogRepository.save(activityLog);
     }
 
-    public void createCommentDeleteLog(Long userId, LogTypes type, Long taskId) {
+    public void createCommentDeleteLog(Long userId, LogTypes type, String description, Long taskId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        ActivityLog activityLog = new ActivityLog(type, user, taskId, type.description);
+        ActivityLog activityLog = new ActivityLog(type, user, taskId, description);
 
         activityLogRepository.save(activityLog);
     }
