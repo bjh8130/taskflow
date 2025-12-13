@@ -46,7 +46,7 @@ public class DashboardService {
         long todo = stats.getTodoTasks();
         long overdue = stats.getOverdueTasks();
 
-        long teamId = teamMemberRepository.findTeamIdByUserId(userId);
+        Long teamId = teamMemberRepository.findTeamIdByUserId(userId);
         long teamTotal = taskRepository.countTeamTotal(teamId);
         long teamCompleted = taskRepository.countTeamCompleted(teamId);
         double teamProgress = ProgressCalculator.calculate(teamTotal, teamCompleted);
