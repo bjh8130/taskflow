@@ -9,6 +9,7 @@ import com.example.taskflow.domain.task.dto.weeklyTrend.WeeklyTrendDto;
 import com.example.taskflow.domain.task.entity.Task;
 import com.example.taskflow.domain.task.repository.DashboardRepository;
 import com.example.taskflow.domain.task.repository.TaskRepository;
+import com.example.taskflow.domain.teamMember.repository.TeamMemberRepository;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class DashboardService {
     private final DashboardRepository dashboardRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     // 대시보드 통계 조회
     @Transactional(readOnly = true)
@@ -40,10 +42,12 @@ public class DashboardService {
         long todo = stats.getTodoTasks();
         long overdue = stats.getOverdueTasks();
 
-        // TODO: 계산식 리팩토링
-        double teamProgress = (total == 0)
+        long teamId = teamMemberRepository.findTeamIdByUserId(userId);
+        long teamTotal = taskRepository.countTeamTotal(teamId);
+        long teamCompleted = taskRepository.countTeamCompleted(teamId);
+        double teamProgress = (teamTotal == 0)
                 ? 0.0
-                : Math.round(((double) completed / total * 100.0) * 100.0) / 100.0;
+                : Math.round(((double) teamCompleted / teamTotal * 100.0) * 100.0) / 100.0;
 
         long myTotal = taskRepository.countByUserIdAndIsDeletedFalse(userId);
         long myCompleted = taskRepository.countByUserIdAndStatusAndIsDeletedFalse(userId, "DONE");
