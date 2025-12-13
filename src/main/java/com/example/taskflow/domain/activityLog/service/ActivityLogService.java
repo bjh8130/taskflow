@@ -9,9 +9,7 @@ import com.example.taskflow.domain.activityLog.entity.ActivityLog;
 import com.example.taskflow.domain.activityLog.repository.ActivityLogRepository;
 import com.example.taskflow.domain.comment.dto.response.CommentResponseDto;
 import com.example.taskflow.domain.comment.dto.response.CommentUpdateResponseDto;
-import com.example.taskflow.domain.comment.repository.CommentRepository;
 import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
-import com.example.taskflow.domain.task.repository.TaskRepository;
 import com.example.taskflow.domain.user.dto.response.UserActivityLogResponseDto;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
@@ -35,8 +33,6 @@ public class ActivityLogService {
 
     private final ActivityLogRepository activityLogRepository;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
-    private final TaskRepository taskRepository;
 
     @Transactional(readOnly = true)
     public CustomPageResponse<ActivityLogResponseDto> findLogPage(
@@ -108,9 +104,9 @@ public class ActivityLogService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (!taskRepository.existsById(taskId)) {
-            throw new CustomException(ErrorCode.TASK_NOT_FOUND);
-        }
+//        if (!taskRepository.existsById(taskId)) {
+//            throw new CustomException(ErrorCode.TASK_NOT_FOUND);
+//        }
 
         ActivityLog activityLog = new ActivityLog(type, user, taskId, description);
 
@@ -146,9 +142,9 @@ public class ActivityLogService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (!commentRepository.existsById(taskId)) {
-            throw new CustomException(ErrorCode.COMMENT_NOT_FOUND);
-        }
+//        if (!commentRepository.existsById(taskId)) {
+//            throw new CustomException(ErrorCode.COMMENT_NOT_FOUND);
+//        }
 
         ActivityLog activityLog = new ActivityLog(type, user, taskId, description);
 
