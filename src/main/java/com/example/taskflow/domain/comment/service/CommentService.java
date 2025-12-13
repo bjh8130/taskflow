@@ -142,7 +142,7 @@ public class CommentService {
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         // 권한 검증: 본인 댓글만 수정 가능
-        if (!comment.getUser().getId().equals(userId)) {
+        if (!comment.isAuthor(userId)) {
             throw new CustomException(ErrorCode.COMMENT_FORBIDDEN);
         }
 
@@ -163,7 +163,7 @@ public class CommentService {
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         // 권한 검증: 본인 댓글만 삭제 가능
-        if (!comment.getUser().getId().equals(userId)) {
+        if (!comment.isAuthor(userId)) {
             throw new CustomException(ErrorCode.COMMENT_DELETE_FORBIDDEN);
         }
 
