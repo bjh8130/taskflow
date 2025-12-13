@@ -1,6 +1,7 @@
 package com.example.taskflow.domain.activityLog.dto.response;
 
 import com.example.taskflow.domain.activityLog.entity.ActivityLog;
+import com.example.taskflow.domain.activityLog.enums.LogTypes;
 import com.example.taskflow.domain.user.dto.response.UserActivityLogResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 public class ActivityLogResponseDto {
 
     private final Long id;
-    private final String type;
+    private final LogTypes type;
     private final Long userId;
     private final UserActivityLogResponseDto user;
     private final Long taskId;

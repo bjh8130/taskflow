@@ -2,6 +2,7 @@ package com.example.taskflow.domain.activityLog.entity;
 
 import com.example.taskflow.common.entity.BaseEntity;
 
+import com.example.taskflow.domain.activityLog.enums.LogTypes;
 import com.example.taskflow.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -18,8 +19,8 @@ public class ActivityLog extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50)
-    private String type;
+    @Column
+    private LogTypes type;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -30,7 +31,7 @@ public class ActivityLog extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    public ActivityLog(String type, User user, Long taskId, String description) {
+    public ActivityLog(LogTypes type, User user, Long taskId, String description) {
         this.type = type;
         this.user = user;
         this.taskId = taskId;
