@@ -1,10 +1,10 @@
 package com.example.taskflow.domain.comment.service;
 
-import com.example.taskflow.common.annotation.ActivityLog;
+import com.example.taskflow.common.annotation.Loggable;
 import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.common.response.CustomPageResponse;
-import com.example.taskflow.domain.activityLog.enums.ActivityTypes;
+import com.example.taskflow.domain.activityLog.enums.LogTypes;
 import com.example.taskflow.domain.comment.dto.request.CommentCreateRequestDto;
 import com.example.taskflow.domain.comment.dto.request.CommentUpdateRequestDto;
 import com.example.taskflow.domain.comment.dto.response.CommentGetResponseDto;
@@ -39,7 +39,7 @@ public class CommentService {
      * - parentId가 있으면 대댓글 생성
      */
     @Transactional
-    @ActivityLog(type = ActivityTypes.COMMENT_CREATED)
+    @Loggable(type = LogTypes.COMMENT_CREATED)
     public CommentResponseDto createComment(CommentCreateRequestDto request, Long taskId, Long userId) {
         // 공통: User와 Task 조회
         User user = userRepository.findById(userId)
@@ -83,6 +83,7 @@ public class CommentService {
     /**
      * 대댓글 생성 (private helper)
      */
+    @Loggable(type = LogTypes.COMMENT_CREATED)
     private Comment createReplyComment(CommentCreateRequestDto request, Task task, User user) {
         // 부모 댓글 조회
         Comment parent = commentRepository.findById(request.getParentId())
@@ -136,7 +137,7 @@ public class CommentService {
      * 댓글 수정
      */
     @Transactional
-    @ActivityLog(type = ActivityTypes.COMMENT_UPDATED)
+    @Loggable(type = LogTypes.COMMENT_UPDATED)
     public CommentUpdateResponseDto updateComment(long taskId, long commentId, CommentUpdateRequestDto request, Long userId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
@@ -157,7 +158,7 @@ public class CommentService {
      * 댓글 삭제
      */
     @Transactional
-    @ActivityLog(type = ActivityTypes.COMMENT_DELETED)
+    @Loggable(type = LogTypes.COMMENT_DELETED)
     public void deleteComment(long commentId, Long userId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));

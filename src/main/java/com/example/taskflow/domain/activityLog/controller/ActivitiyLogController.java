@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.activityLog.controller;
 
+import com.example.taskflow.common.auth.security.PrincipalDetails;
 import com.example.taskflow.common.response.CustomPageResponse;
 import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.activityLog.dto.response.ActivityLogGetOneResponseDto;
@@ -8,6 +9,7 @@ import com.example.taskflow.domain.activityLog.service.ActivityLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -39,8 +41,9 @@ public class ActivitiyLogController {
 
     @GetMapping("/me")
     public ResponseEntity<GlobalResponse<List<ActivityLogGetOneResponseDto>>> readMyLog(
-            @RequestParam Long userId
-    ) {
+            @AuthenticationPrincipal PrincipalDetails details
+            ) {
+        Long userId = details.getUser().getId();
         List<ActivityLogGetOneResponseDto> result = activityLogService.findMyLog(userId);
         return ResponseEntity
                 .status(HttpStatus.OK)

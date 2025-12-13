@@ -3,7 +3,7 @@ package com.example.taskflow.domain.activityLog.enums;
 import lombok.Getter;
 
 @Getter
-public enum ActivityTypes {
+public enum LogTypes {
     TASK_CREATED("작업 생성", "작업이 생성되었습니다."),
     TASK_UPDATED("작업 수정", "작업이 수정되었습니다."),
     TASK_DELETED("작업 삭제", "작업이 삭제되었습니다."),
@@ -15,7 +15,7 @@ public enum ActivityTypes {
     public final String name;
     public final String description;
 
-    ActivityTypes(String name, String description) {
+    LogTypes(String name, String description) {
         this.name = name;
         this.description = description;
     }

@@ -9,9 +9,7 @@ import com.example.taskflow.domain.activityLog.entity.ActivityLog;
 import com.example.taskflow.domain.activityLog.repository.ActivityLogRepository;
 import com.example.taskflow.domain.comment.dto.response.CommentResponseDto;
 import com.example.taskflow.domain.comment.dto.response.CommentUpdateResponseDto;
-import com.example.taskflow.domain.comment.entity.Comment;
 import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
-import com.example.taskflow.domain.task.entity.Task;
 import com.example.taskflow.domain.user.dto.response.UserActivityLogResponseDto;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
@@ -89,11 +87,11 @@ public class ActivityLogService {
         return result;
     }
 
-    public void createTaskLog(String type, String description, Object result) {
+    public void createTaskLog(Long userId, String type, String description, Object result) {
 
         TaskResponseDto dto = (TaskResponseDto) result;
 
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         ActivityLog activityLog = new ActivityLog(type, user, dto.getId(), description);
@@ -101,21 +99,21 @@ public class ActivityLogService {
         activityLogRepository.save(activityLog);
     }
 
-    public void createTaskDeleteLog(String type, String description, Task task) {
+    public void createTaskDeleteLog(Long userId, String type, String description, Long taskId) {
 
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        ActivityLog activityLog = new ActivityLog(type, user, task.getId(), description);
+        ActivityLog activityLog = new ActivityLog(type, user, taskId, description);
 
         activityLogRepository.save(activityLog);
     }
 
-    public void createCommentLog(String type, String description, Object result) {
+    public void createCommentLog(Long userId, String type, String description, Object result) {
 
         CommentResponseDto dto = (CommentResponseDto) result;
 
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         ActivityLog activityLog = new ActivityLog(type, user, dto.getTaskId(), description);
@@ -123,11 +121,11 @@ public class ActivityLogService {
         activityLogRepository.save(activityLog);
     }
 
-    public void createCommentUpdateLog(String type, String description, Object result) {
+    public void createCommentUpdateLog(Long userId, String type, String description, Object result) {
 
         CommentUpdateResponseDto dto = (CommentUpdateResponseDto) result;
 
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         ActivityLog activityLog = new ActivityLog(type, user, dto.getTaskId(), description);
@@ -135,12 +133,12 @@ public class ActivityLogService {
         activityLogRepository.save(activityLog);
     }
 
-    public void createCommentDeleteLog(String type, String description, Comment comment) {
+    public void createCommentDeleteLog(Long userId, String type, String description, Long taskId) {
 
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        ActivityLog activityLog = new ActivityLog(type, user, comment.getTask().getId(), description);
+        ActivityLog activityLog = new ActivityLog(type, user, taskId, description);
 
         activityLogRepository.save(activityLog);
     }
