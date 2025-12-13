@@ -9,14 +9,14 @@ import java.util.List;
 @Getter
 public class TeamMemberCreateResponseDto {
 
-    private final Long teamId;
+    private final Long id;
     private final String name;
     private final String description;
     private final LocalDateTime createdAt;
     private final List<UserTeamResponseDto> members;
 
-    public TeamMemberCreateResponseDto(Long teamId, String name, String description, LocalDateTime createdAt, List<UserTeamResponseDto> members) {
-        this.teamId = teamId;
+    public TeamMemberCreateResponseDto(Long id, String name, String description, LocalDateTime createdAt, List<UserTeamResponseDto> members) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.createdAt = createdAt;
