@@ -20,8 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -91,18 +93,18 @@ public class DashboardService {
         return new MyTaskGetResponseDto(todayTasks, upcomingTasks, overdueTasks);
     }
 
+    /**
+     * 12.11 구현 - 성주연
+     * 12.12 리팩토링 - 성주연
+     * 이월 방식 작업 주간 추세
+     * - tasks: 전날 미완료 + 오늘 생성
+     * - completed: 오늘 완료한 작업
+     * - 미완료 = tasks - completed (다음 날로 이월)
+     */
     @Transactional(readOnly = true)
     public List<WeeklyTrendDto> getWeeklyTrend() {
         LocalDate today = LocalDate.now();
 
-        /**
-         * 12.11 구현 - 성주연
-         * 12.12 리팩토링 - 성주연
-         * 이월 방식 작업 주간 추세
-         * - tasks: 전날 미완료 + 오늘 생성
-         * - completed: 오늘 완료한 작업
-         * - 미완료 = tasks - completed (다음 날로 이월)
-         */
         List<WeeklyTrendDto> result = new ArrayList<>();
         int previousIncomplete = 0;  // 전날 미완료 작업 수
 
@@ -148,7 +150,6 @@ public class DashboardService {
 
     // 날짜를 요일 한글로 변환
     private String getKoreanDayName(LocalDate date) {
-        String[] days = {"일", "월", "화", "수", "목", "금", "토"};
-        return days[date.getDayOfWeek().getValue() % 7];
+        return date.getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN);
     }
 }
