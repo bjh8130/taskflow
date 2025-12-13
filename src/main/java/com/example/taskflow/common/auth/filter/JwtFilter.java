@@ -2,6 +2,7 @@ package com.example.taskflow.common.auth.filter;
 
 
 import com.example.taskflow.common.auth.security.PrincipalDetailsService;
+import com.example.taskflow.common.auth.util.JwtAuthenticationEntryPoint;
 import com.example.taskflow.common.auth.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -11,7 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -24,6 +27,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final PrincipalDetailsService principalDetailsService;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -38,19 +42,25 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String token = resolveToken(request);
-        if (token != null && jwtUtil.validate(token)) {
-            Claims claims = jwtUtil.getClaims(token);
-            String userId = claims.getSubject();
-            UserDetails userDetails = principalDetailsService.loadUserByUsername(userId);
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        try{
+            if (token != null && jwtUtil.validate(token)) {
+                Claims claims = jwtUtil.getClaims(token);
+                String userId = claims.getSubject();
+                UserDetails userDetails = principalDetailsService.loadUserByUsername(userId);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            filterChain.doFilter(request, response);
+        }catch (AuthenticationException ex) {
+            SecurityContextHolder.clearContext();
+            authenticationEntryPoint.commence(request, response, ex);
         }
-        filterChain.doFilter(request, response);
+
     }
     private String resolveToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
