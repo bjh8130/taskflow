@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.task.service;
 
+import com.example.taskflow.common.auth.util.ProgressCalculator;
 import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.domain.task.dto.response.MyTaskGetResponseDto;
@@ -7,6 +8,7 @@ import com.example.taskflow.domain.task.dto.response.MyTaskResponseDto;
 import com.example.taskflow.domain.task.dto.response.StatsGetResponseDto;
 import com.example.taskflow.domain.task.dto.weeklyTrend.WeeklyTrendDto;
 import com.example.taskflow.domain.task.entity.Task;
+import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.example.taskflow.domain.task.repository.DashboardRepository;
 import com.example.taskflow.domain.task.repository.TaskRepository;
 import com.example.taskflow.domain.teamMember.repository.TeamMemberRepository;
@@ -45,15 +47,11 @@ public class DashboardService {
         long teamId = teamMemberRepository.findTeamIdByUserId(userId);
         long teamTotal = taskRepository.countTeamTotal(teamId);
         long teamCompleted = taskRepository.countTeamCompleted(teamId);
-        double teamProgress = (teamTotal == 0)
-                ? 0.0
-                : Math.round(((double) teamCompleted / teamTotal * 100.0) * 100.0) / 100.0;
+        double teamProgress = ProgressCalculator.calculate(teamTotal, teamCompleted);
 
         long myTotal = taskRepository.countByUserIdAndIsDeletedFalse(userId);
-        long myCompleted = taskRepository.countByUserIdAndStatusAndIsDeletedFalse(userId, "DONE");
-        double completionRate = (myTotal == 0)
-                ? 0.0
-                : Math.round(((double) myCompleted / myTotal * 100.0) * 100.0) / 100.0;
+        long myCompleted = taskRepository.countByUserIdAndStatusAndIsDeletedFalse(userId, TaskStatus.DONE.name());
+        double completionRate = ProgressCalculator.calculate(myTotal, myCompleted);
 
         return new StatsGetResponseDto(
                 total,
