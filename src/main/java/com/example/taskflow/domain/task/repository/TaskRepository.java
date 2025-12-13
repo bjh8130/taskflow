@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,4 +44,29 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     List<Task> findByCreatedAtLessThanEqualAndIsDeletedFalse(LocalDateTime date);
 
     List<Task> findByCompletedDateBetweenAndIsDeletedFalse(LocalDateTime start, LocalDateTime end);
+
+    @Query("""
+        select count(t)
+        from Task t
+        where t.isDeleted = false
+          and t.user.id in (
+              select tm.user.id
+              from TeamMember tm
+              where tm.team.id = :teamId
+          )
+    """)
+    long countTeamTotal(@Param("teamId") Long teamId);
+
+    @Query("""
+        select count(t)
+        from Task t
+        where t.isDeleted = false
+          and t.status = 'DONE'
+          and t.user.id in (
+              select tm.user.id
+              from TeamMember tm
+              where tm.team.id = :teamId
+          )
+    """)
+    long countTeamCompleted(@Param("teamId") Long teamId);
 }

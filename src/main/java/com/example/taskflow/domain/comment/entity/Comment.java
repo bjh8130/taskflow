@@ -77,4 +77,15 @@ public class Comment extends BaseEntity {
     public void updateComment(String content) {
         this.content = content;
     }
+
+    /**
+     * 댓글 작성자 확인
+     * @param userId 확인할 사용자 ID
+     * @return 작성자가 맞으면 true
+     */
+    public boolean isAuthor(Long userId) {
+        return this.user != null
+                && this.user.getId() != null
+                && this.user.getId().equals(userId);
+    }
 }
