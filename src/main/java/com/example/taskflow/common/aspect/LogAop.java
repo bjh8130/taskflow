@@ -82,7 +82,7 @@ public class LogAop {
                 }
                 case TASK_STATUS_CHANGED -> {
                     TaskResponseDto after = (TaskResponseDto) result;
-                    String description = String.format("작업 상태를 %s에서 %s로 변경했습니다.", before, after.getStatus());
+                    String description = String.format("작업 상태를 %s에서 %s으로 변경했습니다.", before, after.getStatus());
                     activityLogService.createTaskLog(userId, type, description, result);
                 }
                 case COMMENT_CREATED -> {

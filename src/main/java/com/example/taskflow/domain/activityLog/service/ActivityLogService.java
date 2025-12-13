@@ -16,9 +16,7 @@ import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +35,7 @@ public class ActivityLogService {
 
     @Transactional(readOnly = true)
     public CustomPageResponse<ActivityLogResponseDto> findLogPage(
-            int page, int size, String type, Long userId, Long taskId, LocalDate startDate, LocalDate endDate) {
-
-        // 페이징 조정
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+            Pageable pageable, String type, Long userId, Long taskId, LocalDate startDate, LocalDate endDate) {
 
         // 날짜 변환
         LocalDateTime start = startDate != null ? startDate.atStartOfDay() : null;

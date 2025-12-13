@@ -7,6 +7,9 @@ import com.example.taskflow.domain.activityLog.dto.response.ActivityLogGetOneRes
 import com.example.taskflow.domain.activityLog.dto.response.ActivityLogResponseDto;
 import com.example.taskflow.domain.activityLog.service.ActivityLogService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,8 +27,8 @@ public class ActivitiyLogController {
 
     @GetMapping
     public ResponseEntity<GlobalResponse<CustomPageResponse<ActivityLogResponseDto>>> readLogAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long taskId,
@@ -33,7 +36,7 @@ public class ActivitiyLogController {
             @RequestParam(required = false) LocalDate endDate
     ) {
         CustomPageResponse<ActivityLogResponseDto> result = activityLogService.findLogPage(
-                page, size, type, userId, taskId, startDate, endDate);
+                pageable, type, userId, taskId, startDate, endDate);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(GlobalResponse.success(true, "활동 로그 조회 성공", result));
