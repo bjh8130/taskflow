@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.task.service;
 
+import com.example.taskflow.common.auth.util.ProgressCalculator;
 import com.example.taskflow.common.exception.CustomException;
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.domain.task.dto.response.MyTaskGetResponseDto;
@@ -7,8 +8,10 @@ import com.example.taskflow.domain.task.dto.response.MyTaskResponseDto;
 import com.example.taskflow.domain.task.dto.response.StatsGetResponseDto;
 import com.example.taskflow.domain.task.dto.weeklyTrend.WeeklyTrendDto;
 import com.example.taskflow.domain.task.entity.Task;
+import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.example.taskflow.domain.task.repository.DashboardRepository;
 import com.example.taskflow.domain.task.repository.TaskRepository;
+import com.example.taskflow.domain.teamMember.repository.TeamMemberRepository;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +32,7 @@ public class DashboardService {
     private final DashboardRepository dashboardRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     // 대시보드 통계 조회
     @Transactional(readOnly = true)
@@ -40,16 +46,14 @@ public class DashboardService {
         long todo = stats.getTodoTasks();
         long overdue = stats.getOverdueTasks();
 
-        // TODO: 계산식 리팩토링
-        double teamProgress = (total == 0)
-                ? 0.0
-                : Math.round(((double) completed / total * 100.0) * 100.0) / 100.0;
+        long teamId = teamMemberRepository.findTeamIdByUserId(userId);
+        long teamTotal = taskRepository.countTeamTotal(teamId);
+        long teamCompleted = taskRepository.countTeamCompleted(teamId);
+        double teamProgress = ProgressCalculator.calculate(teamTotal, teamCompleted);
 
         long myTotal = taskRepository.countByUserIdAndIsDeletedFalse(userId);
-        long myCompleted = taskRepository.countByUserIdAndStatusAndIsDeletedFalse(userId, "DONE");
-        double completionRate = (myTotal == 0)
-                ? 0.0
-                : Math.round(((double) myCompleted / myTotal * 100.0) * 100.0) / 100.0;
+        long myCompleted = taskRepository.countByUserIdAndStatusAndIsDeletedFalse(userId, TaskStatus.DONE.name());
+        double completionRate = ProgressCalculator.calculate(myTotal, myCompleted);
 
         return new StatsGetResponseDto(
                 total,
@@ -89,18 +93,18 @@ public class DashboardService {
         return new MyTaskGetResponseDto(todayTasks, upcomingTasks, overdueTasks);
     }
 
+    /**
+     * 12.11 구현 - 성주연
+     * 12.12 리팩토링 - 성주연
+     * 이월 방식 작업 주간 추세
+     * - tasks: 전날 미완료 + 오늘 생성
+     * - completed: 오늘 완료한 작업
+     * - 미완료 = tasks - completed (다음 날로 이월)
+     */
     @Transactional(readOnly = true)
     public List<WeeklyTrendDto> getWeeklyTrend() {
         LocalDate today = LocalDate.now();
 
-        /**
-         * 12.11 구현 - 성주연
-         * 12.12 리팩토링 - 성주연
-         * 이월 방식 작업 주간 추세
-         * - tasks: 전날 미완료 + 오늘 생성
-         * - completed: 오늘 완료한 작업
-         * - 미완료 = tasks - completed (다음 날로 이월)
-         */
         List<WeeklyTrendDto> result = new ArrayList<>();
         int previousIncomplete = 0;  // 전날 미완료 작업 수
 
@@ -146,7 +150,6 @@ public class DashboardService {
 
     // 날짜를 요일 한글로 변환
     private String getKoreanDayName(LocalDate date) {
-        String[] days = {"일", "월", "화", "수", "목", "금", "토"};
-        return days[date.getDayOfWeek().getValue() % 7];
+        return date.getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN);
     }
 }

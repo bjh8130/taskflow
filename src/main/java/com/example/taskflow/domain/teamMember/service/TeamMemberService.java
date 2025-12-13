@@ -40,8 +40,8 @@ public class TeamMemberService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 3. 이미 팀에 속한 유저인지 확인
-        if(teamMemberRepository.existsByTeamIdAndUserId(teamId, request.getUserId())) {
+        // 3. 이미 팀에 속한 유저인지 확인 (One User - One Team)
+        if(teamMemberRepository.existsByUserId(request.getUserId())) {
             throw new CustomException(ErrorCode.TEAM_MEMBER_ALREADY_EXISTS);
         }
 
