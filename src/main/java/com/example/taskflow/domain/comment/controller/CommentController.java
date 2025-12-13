@@ -37,15 +37,8 @@ public class CommentController {
 
         Long userId = principalDetails.getUser().getId();
 
-        // parentId 유무로 댓글/대댓글 자동 판단
-        CommentResponseDto result;
-        if (request.getParentId() == null) {
-            // 최상위 댓글
-            result = commentService.createComment(request, taskId, userId);
-        } else {
-            // 대댓글
-            result = commentService.createReply(request, taskId, userId);
-        }
+        // Service에서 parentId 유무로 자동 판단
+        CommentResponseDto result = commentService.createComment(request, taskId, userId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

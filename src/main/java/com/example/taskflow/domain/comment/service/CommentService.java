@@ -34,17 +34,35 @@ public class CommentService {
     private final UserRepository userRepository;
 
     /**
-     * 댓글 생성 (최상위 댓글)
+     * 댓글/대댓글 생성
+     * - parentId가 없으면 최상위 댓글 생성
+     * - parentId가 있으면 대댓글 생성
      */
     @Transactional
     @ActivityLog(type = ActivityTypes.COMMENT_CREATED)
     public CommentResponseDto createComment(CommentCreateRequestDto request, Long taskId, Long userId) {
-        // User와 Task 조회
+        // 공통: User와 Task 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
 
+        Comment savedComment;
+
+        // parentId 유무로 댓글/대댓글 자동 판단
+        if (request.getParentId() == null) {
+            savedComment = createTopLevelComment(request, task, user, taskId);
+        } else {
+            savedComment = createReplyComment(request, task, user);
+        }
+
+        return CommentResponseDto.from(savedComment);
+    }
+
+    /**
+     * 최상위 댓글 생성 (private helper)
+     */
+    private Comment createTopLevelComment(CommentCreateRequestDto request, Task task, User user, Long taskId) {
         // 새로운 groupId 생성 (해당 Task의 최대 groupId + 1)
         Long maxGroupId = commentRepository.findMaxGroupIdByTaskId(taskId);
         Long newGroupId = maxGroupId + 1;
@@ -59,26 +77,14 @@ public class CommentService {
                 .depth(0L)
                 .build();
 
-        Comment savedComment = commentRepository.save(comment);
-        return CommentResponseDto.from(savedComment);
+        return commentRepository.save(comment);
     }
 
     /**
-     * 대댓글 생성 (답글)
+     * 대댓글 생성 (private helper)
      */
-    @Transactional
-    @ActivityLog(type = ActivityTypes.COMMENT_CREATED)
-    public CommentResponseDto createReply(CommentCreateRequestDto request, Long taskId, Long userId) {
-        // 부모 댓글 확인
-        if (request.getParentId() == null) {
-            throw new CustomException(ErrorCode.PARENT_COMMENT_REQUIRED);
-        }
-
-        // User, Task, 부모 댓글 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new CustomException(ErrorCode.TASK_NOT_FOUND));
+    private Comment createReplyComment(CommentCreateRequestDto request, Task task, User user) {
+        // 부모 댓글 조회
         Comment parent = commentRepository.findById(request.getParentId())
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
@@ -102,9 +108,7 @@ public class CommentService {
                 .depth(parent.getDepth() + 1)
                 .build();
 
-        Comment savedReply = commentRepository.save(reply);
-
-        return CommentResponseDto.from(savedReply);
+        return commentRepository.save(reply);
     }
 
     /**
