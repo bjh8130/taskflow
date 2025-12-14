@@ -6,6 +6,7 @@ import com.example.taskflow.domain.activityLog.enums.LogTypes;
 import com.example.taskflow.domain.activityLog.service.ActivityLogService;
 import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
 import com.example.taskflow.domain.task.entity.Task;
+import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.example.taskflow.domain.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,8 @@ public class LogAop {
             /// 어노테이션 정보 미리 받아오기
             LogTypes type = loggable.type();
 
-            String before = null;
+            TaskStatus before = null;
+
             if (type.equals(LogTypes.TASK_STATUS_CHANGED)) {
                 Long id = (Long) args[0];
                 Task task = taskRepository.findById(id).orElse(null);
