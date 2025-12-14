@@ -10,16 +10,17 @@ import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.example.taskflow.domain.task.repository.TaskRepository;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -39,14 +40,15 @@ class TaskServiceTest {
     @InjectMocks
     private TaskService taskService;
 
+    @DisplayName("작업 생성 성공")
     @Test
     void createTask_success() {
         // given
         Long userId = 1L;
 
         TaskCreateRequestDto request = new TaskCreateRequestDto();
-        ReflectionTestUtils.setField(request, "title", "Test Task");
-        ReflectionTestUtils.setField(request, "description", "Test Description");
+        ReflectionTestUtils.setField(request, "title", "작업 제목");
+        ReflectionTestUtils.setField(request, "description", "작업 내용");
         ReflectionTestUtils.setField(request, "assigneeId", 10L);
         ReflectionTestUtils.setField(request, "priority", null);   // default MEDIUM
         ReflectionTestUtils.setField(request, "dueDate", null);    // default now+7일
@@ -57,13 +59,12 @@ class TaskServiceTest {
         given(userRepository.findByIdAndIsDeletedFalse(10L))
                 .willReturn(Optional.of(assignee));
 
-        Task savedTask = new Task(
+        Task savedTask = Task.create(
                 request.getTitle(),
                 request.getDescription(),
-                TaskStatus.TODO.name(),
-                TaskPriority.MEDIUM.name(), // default
                 assignee,
-                LocalDateTime.now().plusDays(7)
+                null,
+                null
         );
         ReflectionTestUtils.setField(savedTask, "id", 100L);
 
@@ -75,19 +76,21 @@ class TaskServiceTest {
 
         // then
         assertThat(response.getId()).isEqualTo(100L);
-        assertThat(response.getTitle()).isEqualTo("Test Task");
-        assertThat(response.getDescription()).isEqualTo("Test Description");
-        assertThat(response.getPriority()).isEqualTo(TaskPriority.MEDIUM.name());
-        assertThat(response.getStatus()).isEqualTo(TaskStatus.TODO.name());
+        assertThat(response.getTitle()).isEqualTo("작업 제목");
+        assertThat(response.getDescription()).isEqualTo("작업 내용");
+        assertThat(response.getPriority()).isEqualTo(TaskPriority.MEDIUM);
+        assertThat(response.getStatus()).isEqualTo(TaskStatus.TODO);
         assertThat(response.getAssigneeId()).isEqualTo(10L);
 
         assertThat(response.getDueDate())
                 .isAfter(LocalDateTime.now().plusDays(6))
                 .isBefore(LocalDateTime.now().plusDays(8));
 
-        verify(taskRepository, times(1)).save(any(Task.class));
+        verify(userRepository).findByIdAndIsDeletedFalse(10L);
+        verify(taskRepository).save(any(Task.class));
     }
 
+    @DisplayName("작업 단건조회 성공")
     @Test
     void getTaskById_success() {
         Long userId = 1L;
@@ -95,12 +98,11 @@ class TaskServiceTest {
         User assignee = new User("test","test@test.com", "test1","password");
         ReflectionTestUtils.setField(assignee, "id", userId);
 
-        Task task = new Task(
-                "Test Task",
-                "Test Description",
-                TaskStatus.TODO.name(),
-                TaskPriority.MEDIUM.name(),
+        Task task = Task.create(
+                "작업",
+                "작업 내용",
                 assignee,
+                TaskPriority.MEDIUM,
                 LocalDateTime.now().plusDays(3)
         );
         ReflectionTestUtils.setField(task, "id", taskId);
@@ -113,10 +115,10 @@ class TaskServiceTest {
 
         // then
         assertThat(response.getId()).isEqualTo(taskId);
-        assertThat(response.getTitle()).isEqualTo("Test Task");
-        assertThat(response.getDescription()).isEqualTo("Test Description");
-        assertThat(response.getStatus()).isEqualTo(TaskStatus.TODO.name());
-        assertThat(response.getPriority()).isEqualTo(TaskPriority.MEDIUM.name());
+        assertThat(response.getTitle()).isEqualTo("작업");
+        assertThat(response.getDescription()).isEqualTo("작업 내용");
+        assertThat(response.getStatus()).isEqualTo(TaskStatus.TODO);
+        assertThat(response.getPriority()).isEqualTo(TaskPriority.MEDIUM);
         assertThat(response.getAssigneeId()).isEqualTo(userId);
 
         verify(taskRepository, times(1))
@@ -141,21 +143,76 @@ class TaskServiceTest {
                 .findByIdAndIsDeletedFalse(taskId);
     }
 
+    @DisplayName("작업 목록 조회 - status 파라미터가 있으면 상태별 필터링")
     @Test
-    void getAllTask_invalidStatus_throwsException() {
+    void getAllTask_withStatus_returnsFiltered() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
-        String invalidStatus = "NOT_EXIST";
+        TaskStatus status = TaskStatus.IN_PROGRESS;
 
-        // when & then
-        assertThatThrownBy(() -> taskService.getAllTask(pageable, invalidStatus))
-                .isInstanceOf(CustomException.class)
-                .hasMessageContaining(ErrorCode.INVALID_ARGUMENT_STATUS.getMessage());
+        User user = new User("test", "test@test.com", "test1", "password");
+        ReflectionTestUtils.setField(user, "id", 10L);
 
-        verify(taskRepository, never())
-                .findAllByStatusAndIsDeletedFalse(anyString(), any());
-        verify(taskRepository, never())
-                .findAllByIsDeletedFalse(any());
+        Task task = Task.create(
+                "작업",
+                "작업 내용",
+                user,
+                TaskPriority.MEDIUM,
+                LocalDateTime.now().plusDays(3)
+        );
+        // 상태 변경
+        task.updateStatus(status);
+        ReflectionTestUtils.setField(task, "id", 1L);
+
+        Page<Task> taskPage = new PageImpl<>(List.of(task), pageable, 1);
+
+        given(taskRepository.findAllByStatusAndIsDeletedFalse(eq(status), eq(pageable)))
+                .willReturn(taskPage);
+
+        // when
+        Page<TaskResponseDto> response = taskService.getAllTask(pageable, status);
+
+        // then
+        assertThat(response.getTotalElements()).isEqualTo(1);
+        assertThat(response.getContent().get(0).getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
+
+        verify(taskRepository).findAllByStatusAndIsDeletedFalse(status, pageable);
+        verify(taskRepository, never()).findAllByIsDeletedFalse(any());
+    }
+
+    @DisplayName("작업 목록 조회 - status 파라미터가 null이면 전체 조회")
+    @Test
+    void getAllTask_withoutStatus_returnsAll() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10);
+
+        User user = new User("test", "test@test.com", "test1", "password");
+        ReflectionTestUtils.setField(user, "id", 10L);
+
+        Task task = Task.create(
+                "작업",
+                "작업 내용",
+                user,
+                TaskPriority.MEDIUM,
+                LocalDateTime.now().plusDays(3)
+        );
+        ReflectionTestUtils.setField(task, "id", 1L);
+
+        Page<Task> taskPage = new PageImpl<>(List.of(task), pageable, 1);
+
+        given(taskRepository.findAllByIsDeletedFalse(pageable))
+                .willReturn(taskPage);
+
+        // when
+        Page<TaskResponseDto> response = taskService.getAllTask(pageable, null);
+
+        // then
+        assertThat(response.getTotalElements()).isEqualTo(1);
+        assertThat(response.getContent().get(0).getId()).isEqualTo(1L);
+        assertThat(response.getContent().get(0).getStatus()).isEqualTo(TaskStatus.TODO);
+
+        verify(taskRepository).findAllByIsDeletedFalse(pageable);
+        verify(taskRepository, never()).findAllByStatusAndIsDeletedFalse(any(), any());
     }
 
     @Test
@@ -167,20 +224,19 @@ class TaskServiceTest {
         TaskUpdateRequestDto request = new TaskUpdateRequestDto();
         ReflectionTestUtils.setField(request, "title", "작업 수정");
         ReflectionTestUtils.setField(request, "description", "작업 수정 내용");
-        ReflectionTestUtils.setField(request, "priority", TaskPriority.HIGH.name());
+        ReflectionTestUtils.setField(request, "priority", TaskPriority.HIGH);
         ReflectionTestUtils.setField(request, "assigneeId", assigneeId);
         ReflectionTestUtils.setField(request, "dueDate", LocalDateTime.now().plusDays(3));
 
         // 기존 Task
         User user = new User("test","test@test.com", "test1","password");
-        ReflectionTestUtils.setField(user, "id", 99L);
+        ReflectionTestUtils.setField(user, "id", 10L);
 
-        Task task = new Task(
-                "Old Title",
-                "Old Desc",
-                TaskStatus.TODO.name(),
-                TaskPriority.MEDIUM.name(),
+        Task task = Task.create(
+                "작업 수정",
+                "작업 수정 내용",
                 user,
+                TaskPriority.MEDIUM,
                 LocalDateTime.now().plusDays(1)
         );
         ReflectionTestUtils.setField(task, "id", taskId);
@@ -201,7 +257,7 @@ class TaskServiceTest {
         // then
         assertThat(response.getTitle()).isEqualTo("작업 수정");
         assertThat(response.getDescription()).isEqualTo("작업 수정 내용");
-        assertThat(response.getPriority()).isEqualTo(TaskPriority.HIGH.name());
+        assertThat(response.getPriority()).isEqualTo(TaskPriority.HIGH);
         assertThat(response.getAssigneeId()).isEqualTo(assigneeId);
 
         verify(taskRepository).findByIdAndIsDeletedFalse(taskId);
@@ -232,12 +288,11 @@ class TaskServiceTest {
         User user = new User("test","test@test.com", "test1","password");
         ReflectionTestUtils.setField(user, "id", userId);
 
-        Task task = new Task(
-                "작업",
-                "작업내용",
-                TaskStatus.TODO.name(),
-                TaskPriority.MEDIUM.name(),
+        Task task = Task.create(
+                "작업 수정",
+                "작업 수정 내용",
                 user,
+                TaskPriority.MEDIUM,
                 LocalDateTime.now().plusDays(1)
         );
         ReflectionTestUtils.setField(task, "id", taskId);
@@ -267,12 +322,11 @@ class TaskServiceTest {
         User anotherUser = new User("other","other@test.com", "other1","password");
         ReflectionTestUtils.setField(anotherUser, "id", 999L);
 
-        Task task = new Task(
-                "작업",
-                "작업내용",
-                TaskStatus.TODO.name(),
-                TaskPriority.MEDIUM.name(),
+        Task task = Task.create(
+                "작업 수정",
+                "작업 수정 내용",
                 anotherUser,
+                TaskPriority.MEDIUM,
                 LocalDateTime.now().plusDays(1)
         );
 
@@ -293,19 +347,20 @@ class TaskServiceTest {
         Long taskId = 1L;
 
         TaskStatusRequestDto request = new TaskStatusRequestDto();
-        ReflectionTestUtils.setField(request, "status", TaskStatus.IN_PROGRESS.name());
+        ReflectionTestUtils.setField(request, "status", TaskStatus.IN_PROGRESS);
 
         User user = new User("test","test@test.com", "test1","password");
         ReflectionTestUtils.setField(user, "id", 10L);
 
-        Task task = new Task(
-                "작업",
-                "작업내용",
-                TaskStatus.TODO.name(),
-                TaskPriority.MEDIUM.name(),
+        Task task = Task.create(
+                "작업 수정",
+                "작업 수정 내용",
                 user,
+                TaskPriority.MEDIUM,
                 LocalDateTime.now().plusDays(1)
         );
+
+        ReflectionTestUtils.setField(task, "id", taskId);
 
         given(taskRepository.findByIdAndIsDeletedFalse(taskId))
                 .willReturn(Optional.of(task));
@@ -314,20 +369,41 @@ class TaskServiceTest {
         TaskResponseDto response = taskService.updateTaskStatus(taskId, request);
 
         // then
-        assertThat(response.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS.name());
+        assertThat(response.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
     }
 
+    @DisplayName("작업 삭제, 이미 삭제된 작업이면 아무 동작도 하지 않는다 (멱등성)")
     @Test
-    void updateTaskStatus_invalidStatus_throwsException() {
+    void deleteTask_alreadyDeleted_doNothing() {
         // given
         Long taskId = 1L;
+        Long userId = 10L;
 
-        TaskStatusRequestDto request = new TaskStatusRequestDto();
-        ReflectionTestUtils.setField(request, "status", "NOT_EXIST");
+        User user = new User("test","test@test.com", "test1","password");
+        ReflectionTestUtils.setField(user, "id", userId);
 
-        // when & then
-        assertThatThrownBy(() -> taskService.updateTaskStatus(taskId, request))
-                .isInstanceOf(CustomException.class)
-                .hasMessageContaining(ErrorCode.INVALID_ARGUMENT_STATUS.getMessage());
+        Task task = Task.create(
+                "작업",
+                "내용",
+                user,
+                TaskPriority.MEDIUM,
+                LocalDateTime.now().plusDays(1)
+        );
+        ReflectionTestUtils.setField(task, "id", taskId);
+
+        // 이미 삭제된 상태
+        task.softDelete();
+
+        given(userRepository.findByIdAndIsDeletedFalse(userId))
+                .willReturn(Optional.of(user));
+        given(taskRepository.findByIdAndIsDeletedFalse(taskId))
+                .willReturn(Optional.of(task));
+
+        // when
+        taskService.deleteTask(taskId, userId);
+
+        // then
+        assertThat(task.isDeleted()).isTrue();
+        verify(taskRepository, never()).save(any());
     }
 }

@@ -1,6 +1,8 @@
 package com.example.taskflow.domain.search.dto.response;
 
+import com.example.taskflow.domain.task.dto.request.TaskStatusRequestDto;
 import com.example.taskflow.domain.task.entity.Task;
+import com.example.taskflow.domain.task.enums.TaskStatus;
 import lombok.*;
 
 @Getter
@@ -9,7 +11,7 @@ public class TaskSearchDto {
     private final Long id;
     private final String title;
     private final String description;
-    private final String status;
+    private final TaskStatus status;
 
     public static TaskSearchDto from(Task task) {
         return new TaskSearchDto(

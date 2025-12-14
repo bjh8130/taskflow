@@ -5,6 +5,8 @@ import com.example.taskflow.common.response.CustomPageResponse;
 import com.example.taskflow.common.response.GlobalResponse;
 import com.example.taskflow.domain.task.dto.request.*;
 import com.example.taskflow.domain.task.dto.response.TaskResponseDto;
+import com.example.taskflow.domain.task.entity.Task;
+import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.example.taskflow.domain.task.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +57,7 @@ public class TaskController {
     public ResponseEntity<GlobalResponse<CustomPageResponse<TaskResponseDto>>> getAllTasks(
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.ASC)
             Pageable pageable,
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) TaskStatus status,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         Page<TaskResponseDto> result = taskService.getAllTask(pageable, status);

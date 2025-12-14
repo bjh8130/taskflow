@@ -1,6 +1,8 @@
 package com.example.taskflow.domain.task.dto.response;
 
 import com.example.taskflow.domain.task.entity.Task;
+import com.example.taskflow.domain.task.enums.TaskPriority;
+import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.example.taskflow.domain.user.dto.response.UserTaskResponseDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,8 @@ public class TaskResponseDto {
     private final Long id;
     private final String title;
     private final String description;
-    private final String status;
-    private final String priority;
+    private final TaskStatus status;
+    private final TaskPriority priority;
 
     private final Long assigneeId;
     private final UserTaskResponseDto assignee;
