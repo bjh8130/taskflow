@@ -48,14 +48,14 @@ class SearchServiceTest {
     void search_success() {
         // given
         String query = "test";
-
+        User taskUser = new User("test","test@test.com", "test1","password");
+        ReflectionTestUtils.setField(taskUser, "id", 5L);
         // Task 검색 결과 mock
-        Task task = new Task(
+        Task task = Task.create(
                 "작업",
                 "작업내용",
-                TaskStatus.TODO.name(),
-                TaskPriority.MEDIUM.name(),
-                null,
+                taskUser,
+                TaskPriority.MEDIUM,
                 LocalDateTime.now()
         );
         ReflectionTestUtils.setField(task, "id", 1L);
