@@ -6,6 +6,7 @@ import com.example.taskflow.common.response.CustomPageResponse;
 import com.example.taskflow.domain.activityLog.dto.response.ActivityLogGetOneResponseDto;
 import com.example.taskflow.domain.activityLog.dto.response.ActivityLogResponseDto;
 import com.example.taskflow.domain.activityLog.entity.ActivityLog;
+import com.example.taskflow.domain.activityLog.enums.LogTypes;
 import com.example.taskflow.domain.activityLog.repository.ActivityLogRepository;
 import com.example.taskflow.domain.comment.dto.response.CommentResponseDto;
 import com.example.taskflow.domain.comment.dto.response.CommentUpdateResponseDto;
@@ -15,9 +16,7 @@ import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,10 +35,7 @@ public class ActivityLogService {
 
     @Transactional(readOnly = true)
     public CustomPageResponse<ActivityLogResponseDto> findLogPage(
-            int page, int size, String type, Long userId, Long taskId, LocalDate startDate, LocalDate endDate) {
-
-        // 페이징 조정
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+            Pageable pageable, String type, Long userId, Long taskId, LocalDate startDate, LocalDate endDate) {
 
         // 날짜 변환
         LocalDateTime start = startDate != null ? startDate.atStartOfDay() : null;
@@ -87,7 +83,7 @@ public class ActivityLogService {
         return result;
     }
 
-    public void createTaskLog(Long userId, String type, String description, Object result) {
+    public void createTaskLog(Long userId, LogTypes type, String description, Object result) {
 
         TaskResponseDto dto = (TaskResponseDto) result;
 
@@ -99,7 +95,7 @@ public class ActivityLogService {
         activityLogRepository.save(activityLog);
     }
 
-    public void createTaskDeleteLog(Long userId, String type, String description, Long taskId) {
+    public void createTaskDeleteLog(Long userId, LogTypes type, String description, Long taskId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -109,7 +105,7 @@ public class ActivityLogService {
         activityLogRepository.save(activityLog);
     }
 
-    public void createCommentLog(Long userId, String type, String description, Object result) {
+    public void createCommentCreateLog(Long userId, LogTypes type, String description, Object result) {
 
         CommentResponseDto dto = (CommentResponseDto) result;
 
@@ -121,7 +117,7 @@ public class ActivityLogService {
         activityLogRepository.save(activityLog);
     }
 
-    public void createCommentUpdateLog(Long userId, String type, String description, Object result) {
+    public void createCommentUpdateLog(Long userId, LogTypes type, String description, Object result) {
 
         CommentUpdateResponseDto dto = (CommentUpdateResponseDto) result;
 
@@ -133,7 +129,7 @@ public class ActivityLogService {
         activityLogRepository.save(activityLog);
     }
 
-    public void createCommentDeleteLog(Long userId, String type, String description, Long taskId) {
+    public void createCommentDeleteLog(Long userId, LogTypes type, String description, Long taskId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
