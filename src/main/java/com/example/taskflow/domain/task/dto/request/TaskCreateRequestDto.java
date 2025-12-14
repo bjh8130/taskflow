@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.task.dto.request;
 
+import com.example.taskflow.domain.task.enums.TaskPriority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -13,8 +14,7 @@ public class TaskCreateRequestDto {
     @NotBlank(message="제목은 필수 입니다.")
     private String title;
     private String description;
-    private String status;
-    private String priority;
+    private TaskPriority priority;
     private Long assigneeId;
     private LocalDateTime dueDate;
 

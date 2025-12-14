@@ -9,8 +9,8 @@ public enum TaskStatus {
     IN_PROGRESS,
     DONE;
 
-    public static boolean isValid(String value) {
+    public static boolean isValid(TaskStatus value) {
         return Arrays.stream(values())
-                .anyMatch(v -> v.name().equalsIgnoreCase(value));
+                .anyMatch(v -> v.name().equalsIgnoreCase(String.valueOf(value)));
     }
 }

@@ -2,6 +2,7 @@ package com.example.taskflow.domain.task.repository;
 
 import com.example.taskflow.domain.task.dto.response.StatsGetResponseDto;
 import com.example.taskflow.domain.task.entity.QTask;
+import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -24,23 +25,23 @@ public class DashboardQueryRepository implements DashboardRepository {
         LocalDateTime now = LocalDateTime.now();
 
         var completed = new CaseBuilder()
-                .when(task.status.eq("DONE")).then(1L)
+                .when(task.status.eq(TaskStatus.DONE)).then(1L)
                 .otherwise(0L)
                 .sum();
 
         var inProgress = new CaseBuilder()
-                .when(task.status.eq("IN_PROGRESS")).then(1L)
+                .when(task.status.eq(TaskStatus.IN_PROGRESS)).then(1L)
                 .otherwise(0L)
                 .sum();
 
         var todo = new CaseBuilder()
-                .when(task.status.eq("TODO")).then(1L)
+                .when(task.status.eq(TaskStatus.TODO)).then(1L)
                 .otherwise(0L)
                 .sum();
 
         var overdue = new CaseBuilder()
                 .when(task.dueDate.before(now)
-                        .and(task.status.ne("DONE")))
+                        .and(task.status.ne(TaskStatus.DONE)))
                 .then(1L)
                 .otherwise(0L)
                 .sum();

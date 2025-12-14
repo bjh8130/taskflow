@@ -1,11 +1,14 @@
 package com.example.taskflow.domain.task.entity;
 
 import com.example.taskflow.common.entity.BaseEntity;
+import com.example.taskflow.domain.task.enums.TaskPriority;
+import com.example.taskflow.domain.task.enums.TaskStatus;
 import com.example.taskflow.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -30,11 +33,13 @@ public class Task extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private String status;
+    private TaskStatus status;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private String priority;
+    private TaskPriority priority;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "assignee_id", nullable = false)
@@ -51,17 +56,28 @@ public class Task extends BaseEntity {
     @Column
     private boolean isDeleted = false;
 
-    public Task(String title, String description, String status, String priority, User user, LocalDateTime dueDate) {
-        this.title = title;
-        this.description = description;
-        this.status = status;
-        this.priority = priority;
-        this.user = user;
-        this.dueDate = dueDate;
+    public static Task create(
+            String title,
+            String description,
+            User user,
+            TaskPriority priority,
+            LocalDateTime dueDate
+    ) {
+        Task task = new Task();
+        task.title = title;
+        task.description = description;
+        task.user = user;
+
+        //기본값 책임을 엔티티로 위임
+        task.status = TaskStatus.TODO;
+        task.priority = (priority != null) ? priority : TaskPriority.MEDIUM;
+        task.dueDate = (dueDate != null) ? dueDate : LocalDateTime.now().plusDays(7);
+
+        return task;
     }
 
 
-    public void update(String title, String description, String priority, User user, LocalDateTime dueDate) {
+    public void update(String title, String description, TaskPriority priority, User user, LocalDateTime dueDate) {
         this.title = title;
         this.description = description;
         this.priority = priority;
@@ -73,19 +89,19 @@ public class Task extends BaseEntity {
         this.isDeleted = true;
     }
 
-    public void updateStatus(String status) {
+    public void updateStatus(TaskStatus status) {
         this.status = status;
         // DONE으로 변경 시 완료 시간 기록
-        if ("DONE".equals(status) && this.completedDate == null) {
+        if (isCompleted() && this.completedDate == null) {
             this.completedDate = LocalDateTime.now();
         }
         // DONE이 아닌 상태로 변경 시 완료 시간 제거
-        else if (!"DONE".equals(status)) {
+        else if (isCompleted()) {
             this.completedDate = null;
         }
     }
 
     public boolean isCompleted() {
-        return "DONE".equals(this.status);
+        return TaskStatus.DONE.equals(this.status);
     }
 }

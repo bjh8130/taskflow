@@ -35,17 +35,12 @@ public class TaskService {
     public TaskResponseDto createTask(TaskCreateRequestDto request, Long userId) {
         User assignee = userRepository.findByIdAndIsDeletedFalse(request.getAssigneeId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Task task = new Task(
+        Task task = Task.create(
                 request.getTitle(),
                 request.getDescription(),
-                TaskStatus.TODO.name(),
-                request.getPriority() != null
-                        ? request.getPriority()
-                        : TaskPriority.MEDIUM.name(),
                 assignee,
-                request.getDueDate() != null
-                        ? request.getDueDate()
-                        :LocalDateTime.now().plusDays(7)
+                request.getPriority(),
+                request.getDueDate()
         );
         Task savedTask = taskRepository.save(task);
         return TaskResponseDto.from(savedTask, false);
@@ -59,7 +54,7 @@ public class TaskService {
     }
 
     @Transactional(readOnly=true)
-    public Page<TaskResponseDto> getAllTask(Pageable pageable, String status) {
+    public Page<TaskResponseDto> getAllTask(Pageable pageable, TaskStatus status) {
         Page<Task> tasks;
         if(status == null) {
             tasks = taskRepository.findAllByIsDeletedFalse(pageable);
