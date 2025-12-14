@@ -52,7 +52,7 @@ public class DashboardService {
         double teamProgress = ProgressCalculator.calculate(teamTotal, teamCompleted);
 
         long myTotal = taskRepository.countByUserIdAndIsDeletedFalse(userId);
-        long myCompleted = taskRepository.countByUserIdAndStatusAndIsDeletedFalse(userId, TaskStatus.DONE.name());
+        long myCompleted = taskRepository.countByUserIdAndStatusAndIsDeletedFalse(userId, TaskStatus.DONE);
         double completionRate = ProgressCalculator.calculate(myTotal, myCompleted);
 
         return new StatsGetResponseDto(
@@ -87,7 +87,7 @@ public class DashboardService {
                 .stream().map(MyTaskResponseDto::from).toList();
 
         List<MyTaskResponseDto> overdueTasks = taskRepository
-                .findAllByUserIdAndIsDeletedFalseAndDueDateLessThanAndStatusNot(userId, start, "DONE")
+                .findAllByUserIdAndIsDeletedFalseAndDueDateLessThanAndStatusNot(userId, start, TaskStatus.DONE)
                 .stream().map(MyTaskResponseDto::from).toList();
 
         return new MyTaskGetResponseDto(todayTasks, upcomingTasks, overdueTasks);

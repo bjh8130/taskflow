@@ -21,7 +21,7 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     Page<Task> findAllByStatusAndIsDeletedFalse(TaskStatus status, Pageable pageable);
     Optional<Task> findByIdAndIsDeletedFalse(Long id);
 
-    long countByUserIdAndStatusAndIsDeletedFalse(Long userId, String status);
+    long countByUserIdAndStatusAndIsDeletedFalse(Long userId, TaskStatus status);
 
     long countByUserIdAndIsDeletedFalse(long userId);
 
@@ -29,7 +29,7 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
 
     List<Task> findAllByUserIdAndIsDeletedFalseAndDueDateGreaterThanEqual(Long userId, LocalDateTime end);
 
-    List<Task> findAllByUserIdAndIsDeletedFalseAndDueDateLessThanAndStatusNot(long userId, LocalDateTime start, String status);
+    List<Task> findAllByUserIdAndIsDeletedFalseAndDueDateLessThanAndStatusNot(long userId, LocalDateTime start, TaskStatus status);
 
     @Query("""
     SELECT t FROM Task t
